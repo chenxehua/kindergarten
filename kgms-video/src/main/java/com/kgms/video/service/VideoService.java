@@ -57,4 +57,51 @@ public class VideoService {
         vo.setAuditStatus(video.getAuditStatus());
         return vo;
     }
+
+    public String getVideoPlayUrl(String videoId) {
+        GrowthVideo video = videoMapper.selectOne(
+                new LambdaQueryWrapper<GrowthVideo>().eq(GrowthVideo::getVideoId, videoId)
+        );
+        if (video == null) {
+            throw new BusinessException(404, "视频不存在");
+        }
+        // TODO: 返回实际的播放URL（可以拼接MinIO地址）
+        return video.getVideoUrl();
+    }
+
+    public String getVideoDownloadUrl(String videoId) {
+        GrowthVideo video = videoMapper.selectOne(
+                new LambdaQueryWrapper<GrowthVideo>().eq(GrowthVideo::getVideoId, videoId)
+        );
+        if (video == null) {
+            throw new BusinessException(404, "视频不存在");
+        }
+        // TODO: 返回实际的下载URL
+        return video.getVideoUrl();
+    }
+
+    public void auditVideo(String videoId, Boolean approved) {
+        GrowthVideo video = videoMapper.selectOne(
+                new LambdaQueryWrapper<GrowthVideo>().eq(GrowthVideo::getVideoId, videoId)
+        );
+        if (video == null) {
+            throw new BusinessException(404, "视频不存在");
+        }
+        video.setAuditStatus(approved ? 1 : 2);
+        videoMapper.updateById(video);
+    }
+
+    public String regenerateVideo(String videoId) {
+        GrowthVideo video = videoMapper.selectOne(
+                new LambdaQueryWrapper<GrowthVideo>().eq(GrowthVideo::getVideoId, videoId)
+        );
+        if (video == null) {
+            throw new BusinessException(404, "视频不存在");
+        }
+        // TODO: 重新生成视频
+        log.info("重新生成视频: videoId={}", videoId);
+        video.setGenStatus(0);
+        videoMapper.updateById(video);
+        return videoId;
+    }
 }

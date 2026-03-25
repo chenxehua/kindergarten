@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -121,7 +122,7 @@ public class PhotoService {
      * 批量上传照片
      */
     public List<PhotoVO> batchUploadPhotos(MultipartFile[] files, String studentId, String recordId, String photoType) {
-        return Stream.of(files)
+        return Arrays.asList(files).stream()
                 .map(file -> {
                     try {
                         return uploadPhoto(file, studentId, recordId, photoType);

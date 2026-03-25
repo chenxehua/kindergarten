@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
-import java.time.temporal.TemporaryAdjusters;
+import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,7 +28,7 @@ public class RecipeService {
     @Transactional
     public String addRecipe(RecipeDTO dto) {
         // 获取本周一
-        LocalDate weekStart = LocalDate.now().with(TemporaryAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate weekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         if (dto.getWeekStart() != null) {
             weekStart = dto.getWeekStart();
         }
@@ -95,7 +95,7 @@ public class RecipeService {
     }
 
     public RecipeVO getCurrentWeekRecipe(String kgId) {
-        LocalDate weekStart = LocalDate.now().with(TemporaryAdjusters.previousOrSame(DayOfWeek.MONDAY));
+        LocalDate weekStart = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
         FoodRecipe recipe = getRecipeByKgAndWeek(kgId, weekStart);
         if (recipe == null) {
             return null;
