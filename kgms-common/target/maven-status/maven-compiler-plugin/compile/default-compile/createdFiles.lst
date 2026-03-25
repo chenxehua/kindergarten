@@ -4,9 +4,11 @@ com/kgms/common/enums/VideoType.class
 com/kgms/common/exception/BusinessException.class
 com/kgms/common/exception/GlobalExceptionHandler.class
 com/kgms/common/base/BaseEntity.class
+com/kgms/common/config/wechat/WechatMiniAppConfig.class
 com/kgms/common/result/Result.class
 com/kgms/common/enums/StudentStatus.class
 com/kgms/common/enums/RecordStatus.class
+com/kgms/common/config/wechat/WechatMiniAppService.class
 com/kgms/common/enums/Gender.class
 com/kgms/common/util/JwtUtil.class
 com/kgms/common/result/PageResult.class
