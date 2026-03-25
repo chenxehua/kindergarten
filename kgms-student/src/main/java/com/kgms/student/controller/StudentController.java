@@ -6,6 +6,7 @@ import com.kgms.student.dto.StudentVO;
 import com.kgms.student.service.StudentBatchService;
 import com.kgms.student.service.StudentService;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 

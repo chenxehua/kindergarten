@@ -19,6 +19,20 @@
             <artifactId>kgms-common</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.kgms</groupId>
+            <artifactId>kgms-student</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.kgms</groupId>
+            <artifactId>kgms-user</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>

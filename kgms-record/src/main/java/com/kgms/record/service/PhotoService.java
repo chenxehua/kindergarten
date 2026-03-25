@@ -2,6 +2,7 @@ package com.kgms.record.service;
 
 import cn.hutool.core.util.IdUtil;
 import com.kgms.common.exception.BusinessException;
+import com.kgms.common.util.IdGenerator;
 import com.kgms.record.dto.PhotoVO;
 import com.kgms.record.entity.GrowthPhoto;
 import com.kgms.record.mapper.GrowthPhotoMapper;
