@@ -1,15 +1,7 @@
 package com.kgms.common.exception;
 
-import lombok.Getter;
-
-/**
- * 业务异常
- */
-@Getter
 public class BusinessException extends RuntimeException {
-
     private static final long serialVersionUID = 1L;
-
     private final Integer code;
 
     public BusinessException(String message) {
@@ -26,4 +18,6 @@ public class BusinessException extends RuntimeException {
         super(message, cause);
         this.code = code;
     }
+
+    public Integer getCode() { return code; }
 }

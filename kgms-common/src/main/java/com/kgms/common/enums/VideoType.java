@@ -1,15 +1,6 @@
 package com.kgms.common.enums;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-
-/**
- * 视频类型枚举
- */
-@Getter
-@AllArgsConstructor
 public enum VideoType {
-
     MONTHLY("monthly", "月度视频"),
     SEMESTER("semester", "学期视频"),
     YEAR("year", "学年视频"),
@@ -18,14 +9,18 @@ public enum VideoType {
     private final String code;
     private final String desc;
 
+    VideoType(String code, String desc) {
+        this.code = code;
+        this.desc = desc;
+    }
+
+    public String getCode() { return code; }
+    public String getDesc() { return desc; }
+
     public static VideoType getByCode(String code) {
-        if (code == null) {
-            return null;
-        }
-        for (VideoType type : values()) {
-            if (type.getCode().equals(code)) {
-                return type;
-            }
+        if (code == null) return null;
+        for (VideoType t : values()) {
+            if (t.getCode().equals(code)) return t;
         }
         return null;
     }

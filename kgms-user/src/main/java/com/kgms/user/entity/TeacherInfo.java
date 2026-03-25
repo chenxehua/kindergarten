@@ -1,32 +1,22 @@
 package com.kgms.user.entity;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kgms.common.base.BaseEntity;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-
 import java.time.LocalDate;
-
-/**
- * 老师信息表
- */
-@Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("t_teacher_info")
 public class TeacherInfo extends BaseEntity {
-
-    /** 关联用户ID */
     private String userId;
-
-    /** 工号 */
     private String teacherNo;
-
-    /** 职位: 主班/副班/保育员/保健医 */
     private String position;
-
-    /** 所属部门 */
     private String department;
-
-    /** 入职日期 */
     private LocalDate hireDate;
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+    public String getTeacherNo() { return teacherNo; }
+    public void setTeacherNo(String teacherNo) { this.teacherNo = teacherNo; }
+    public String getPosition() { return position; }
+    public void setPosition(String position) { this.position = position; }
+    public String getDepartment() { return department; }
+    public void setDepartment(String department) { this.department = department; }
+    public LocalDate getHireDate() { return hireDate; }
+    public void setHireDate(LocalDate hireDate) { this.hireDate = hireDate; }
 }

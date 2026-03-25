@@ -4,9 +4,9 @@ spring:
   application:
     name: kgms-notice
   datasource:
-    url: jdbc:mysql://localhost:3306/kgms_notice
+    url: jdbc:mysql://host.docker.internal:3306/kgms
     username: root
-    password: root
+    password: tldevops2026
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true

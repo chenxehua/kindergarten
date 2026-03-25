@@ -2,47 +2,42 @@ package com.kgms.user.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kgms.common.base.BaseEntity;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import java.time.LocalDateTime;
 
-/**
- * 用户表
- */
-@Data
-@EqualsAndHashCode(callSuper = true)
 @TableName("t_sys_user")
 public class SysUser extends BaseEntity {
-
-    /** 用户ID */
     private String userId;
-
-    /** 用户类型: 1-家长 2-老师 3-园长 4-管理员 */
     private Integer userType;
-
-    /** 用户名(手机号) */
     private String username;
-
-    /** 密码 */
     private String password;
-
-    /** 昵称 */
     private String nickname;
-
-    /** 头像URL */
     private String avatar;
-
-    /** 手机号 */
     private String phone;
-
-    /** 微信OpenID */
     private String wechatOpenid;
-
-    /** 微信UnionID */
     private String wechatUnionid;
-
-    /** 状态: 0-禁用 1-正常 */
     private Integer status;
+    private LocalDateTime lastLoginTime;
 
-    /** 最后登录时间 */
-    private java.time.LocalDateTime lastLoginTime;
+    public String getUserId() { return userId; }
+    public void setUserId(String userId) { this.userId = userId; }
+    public Integer getUserType() { return userType; }
+    public void setUserType(Integer userType) { this.userType = userType; }
+    public String getUsername() { return username; }
+    public void setUsername(String username) { this.username = username; }
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
+    public String getNickname() { return nickname; }
+    public void setNickname(String nickname) { this.nickname = nickname; }
+    public String getAvatar() { return avatar; }
+    public void setAvatar(String avatar) { this.avatar = avatar; }
+    public String getPhone() { return phone; }
+    public void setPhone(String phone) { this.phone = phone; }
+    public String getWechatOpenid() { return wechatOpenid; }
+    public void setWechatOpenid(String wechatOpenid) { this.wechatOpenid = wechatOpenid; }
+    public String getWechatUnionid() { return wechatUnionid; }
+    public void setWechatUnionid(String wechatUnionid) { this.wechatUnionid = wechatUnionid; }
+    public Integer getStatus() { return status; }
+    public void setStatus(Integer status) { this.status = status; }
+    public LocalDateTime getLastLoginTime() { return lastLoginTime; }
+    public void setLastLoginTime(LocalDateTime lastLoginTime) { this.lastLoginTime = lastLoginTime; }
 }

@@ -1,0 +1,15 @@
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/exception/GlobalExceptionHandler.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/enums/StudentStatus.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/enums/RecordStatus.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/enums/VideoGenStatus.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/result/PageResult.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/util/JwtUtil.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/util/IdGenerator.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/result/Result.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/enums/Gender.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/base/BaseEntity.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/config/MyBatisPlusConfig.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/enums/VideoType.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/config/CommonConfig.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/enums/UserType.java
+/Users/czh/git/kindergarten/kgms-common/src/main/java/com/kgms/common/exception/BusinessException.java
