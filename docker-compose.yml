@@ -22,19 +22,14 @@ services:
     environment:
       MODE: standalone
       PREFER_HOST_MODE: hostname
-      SPRING_DATASOURCE_PLATFORM: mysql
-      MYSQL_SERVICE_HOST: mysql
-      MYSQL_SERVICE_DB_NAME: nacos_config
-      MYSQL_SERVICE_PORT: 3306
-      MYSQL_SERVICE_USER: root
-      MYSQL_SERVICE_PASSWORD: root
+      NACOS_AUTH_TOKEN: SecretKey012345678901234567890123456789012345678901234567890123456789
+      NACOS_AUTH_IDENTITY_KEY: serverIdentity
+      NACOS_AUTH_IDENTITY_VALUE: security
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
       - "8848:8848"
       - "9848:9848"
-    depends_on:
-      - mysql
 
 volumes:
   mysql_data:
