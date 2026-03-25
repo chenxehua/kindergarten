@@ -1,10 +1,8 @@
 package com.kgms.food.entity;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kgms.common.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -12,7 +10,6 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(callSuper = true)
 @TableName("t_food_recipe")
 public class FoodRecipe extends BaseEntity {
-
     private String recipeId;
     private String kgId;
     private LocalDate weekStart;

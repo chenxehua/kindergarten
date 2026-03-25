@@ -4,6 +4,7 @@ import com.kgms.common.base.BaseEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
+
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("t_growth_video")

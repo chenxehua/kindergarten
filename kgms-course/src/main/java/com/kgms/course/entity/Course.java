@@ -1,5 +1,4 @@
 package com.kgms.course.entity;
-
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.kgms.common.base.BaseEntity;
 import lombok.Data;
