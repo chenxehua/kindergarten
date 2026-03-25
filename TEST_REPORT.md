@@ -194,38 +194,56 @@
 
 ---
 
-## 六、运行测试命令
+## 八、运行说明
+
+### ⚠️ 环境说明
+
+由于当前命令行环境缺少Lombok注解处理器，无法直接使用`mvn test`运行测试。
+
+### 解决方案
+
+**方案1：使用IDE（推荐）**
+
+1. 使用 IntelliJ IDEA 打开项目
+2. 安装 Lombok 插件：Settings → Plugins → 搜索 "Lombok"
+3. 重新加载Maven项目
+4. 右键点击测试类 → Run 'xxxTest'
+
+**方案2：手动添加Lombok依赖**
 
 ```bash
-# 运行所有单元测试
-cd /Users/czh/git/kindergarten
+# 在项目根目录执行
+mvn dependency:resolve -U
 mvn test
-
-# 运行单个模块测试
-mvn test -pl kgms-user
-mvn test -pl kgms-student
-mvn test -pl kgms-class
-mvn test -pl kgms-record
-mvn test -pl kgms-food
-mvn test -pl kgms-course
-mvn test -pl kgms-video
-mvn test -pl kgms-notice
-mvn test -pl kgms-growth
-
-# 生成测试报告
-mvn test -DgenerateReports
 ```
+
+**方案3：使用VSCode**
+
+1. 安装 "Extension Pack for Java"
+2. 打开项目，等待索引完成
+3. 右键测试文件 → Run Test
 
 ---
 
-## 七、测试环境配置
+## 九、测试代码已就绪
 
-| 环境 | 配置 |
-|------|------|
-| JDK | Java 17+ |
-| Maven | 3.9+ |
-| 数据库 | MySQL 8.0 |
-| 缓存 | Redis |
+测试代码已完成并提交到GitHub仓库：
+
+```
+提交: 6611ac9
+内容: test: 完成所有模块单元测试
+```
+
+测试类列表：
+- `kgms-user/src/test/java/.../UserServiceTest.java`
+- `kgms-student/src/test/java/.../StudentServiceTest.java`
+- `kgms-class/src/test/java/.../ClassServiceTest.java`
+- `kgms-record/src/test/java/.../RecordServiceTest.java`
+- `kgms-food/src/test/java/.../RecipeServiceTest.java`
+- `kgms-course/src/test/java/.../CourseServiceTest.java`
+- `kgms-video/src/test/java/.../VideoServiceTest.java`
+- `kgms-notice/src/test/java/.../NoticeServiceTest.java`
+- `kgms-growth/src/test/java/.../GrowthProfileServiceTest.java`
 
 ---
 
