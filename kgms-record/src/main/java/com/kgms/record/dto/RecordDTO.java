@@ -6,47 +6,66 @@ import lombok.Data;
 
 import java.time.LocalDate;
 
+/**
+ * 成长记录DTO
+ */
 @Data
 public class RecordDTO {
 
+    /** 学生ID */
     @NotBlank(message = "学生ID不能为空")
     private String studentId;
 
+    /** 记录日期 */
     @NotNull(message = "记录日期不能为空")
     private LocalDate recordDate;
 
-    // 课程记录
+    /** 课程记录 */
     private String courseRecord;
+    /** 课程照片 */
     private String coursePhotos;
 
-    // 情绪记录
+    /** 情绪类型 */
     private String emotionType;
+    /** 情绪详情 */
     private String emotionDetail;
 
-    // 饮食记录
+    /** 早餐 */
     private String breakfast;
+    /** 午餐 */
     private String lunch;
+    /** 晚餐 */
     private String dinner;
+    /** 点心 */
     private String snack;
+    /** 食物照片 */
     private String foodPhotos;
+    /** 过敏标志 */
     private Integer allergyFlag;
+    /** 过敏详情 */
     private String allergyDetail;
 
-    // 午休记录
+    /** 睡眠时间 */
     private String sleepTime;
+    /** 睡眠质量 */
     private String sleepQuality;
+    /** 睡眠备注 */
     private String sleepNote;
 
-    // 活动记录
+    /** 活动类型 */
     private String activityType;
+    /** 活动详情 */
     private String activityDetail;
+    /** 活动照片 */
     private String activityPhotos;
 
-    // 健康记录
+    /** 体温 */
     private String temperature;
+    /** 健康状态 */
     private String healthStatus;
+    /** 健康备注 */
     private String healthNote;
 
-    // 总体评价
+    /** 总体评价 */
     private String overallNote;
 }
