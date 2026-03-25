@@ -1,0 +1,12 @@
+server:
+  port: 8087
+spring:
+  application:
+    name: kgms-growth
+  datasource:
+    url: jdbc:mysql://localhost:3306/kgms_growth
+    username: root
+    password: root
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true

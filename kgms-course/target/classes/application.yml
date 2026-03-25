@@ -1,0 +1,13 @@
+server:
+  port: 8086
+spring:
+  application:
+    name: kgms-course
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/kgms_course?useUnicode=true&characterEncoding=utf-8
+    username: root
+    password: root
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true

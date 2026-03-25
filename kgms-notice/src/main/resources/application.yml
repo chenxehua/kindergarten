@@ -1,0 +1,12 @@
+server:
+  port: 8089
+spring:
+  application:
+    name: kgms-notice
+  datasource:
+    url: jdbc:mysql://localhost:3306/kgms_notice
+    username: root
+    password: root
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true

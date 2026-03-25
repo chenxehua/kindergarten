@@ -1,0 +1,12 @@
+server:
+  port: 8088
+spring:
+  application:
+    name: kgms-video
+  datasource:
+    url: jdbc:mysql://localhost:3306/kgms_video
+    username: root
+    password: root
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
