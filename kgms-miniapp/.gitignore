@@ -1,0 +1,48 @@
+# ===================
+# Node modules
+# ===================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# ===================
+# Build outputs
+# ===================
+dist/
+dist-ssr/
+*.local
+.output/
+.nuxt/
+.output
+
+# ===================
+# IDE
+# ===================
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# ===================
+# Environment variables
+# ===================
+.env
+.env.local
+.env.*.local
+
+# ===================
+# Test
+# ===================
+coverage/
+
+# ===================
+# Misc
+# ===================
+.DS_Store
+Thumbs.db
