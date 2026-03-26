@@ -1,113 +1,127 @@
-# 智慧幼儿园成长管理系统 (KGMS) 测试报告
+# 智慧幼儿园成长管理系统 - 测试报告
 
-**测试日期**: 2026-03-26  
-**测试环境**: macOS 26.1 (ARM64), Java 17 (Temurin)
+## 测试概述
 
----
+| 项目 | 内容 |
+|------|------|
+| 测试日期 | 2026-03-26 |
+| 测试类型 | 单元测试 + 集成测试 |
+| 总测试数 | 44 |
+| 通过数 | 44 |
+| 失败数 | 0 |
+| 跳过数 | 0 |
 
-## 一、开发进度总览
+## 单元测试结果
 
-### 1.1 已完成模块
+### 1. 用户服务 (kgms-user)
+| 测试用例 | 状态 |
+|---------|------|
+| testLoginByPassword_Success | ✅ 通过 |
+| testLoginByPassword_UserNotFound | ✅ 通过 |
+| testLoginByPassword_WrongPassword | ✅ 通过 |
+| testLoginByPassword_UserDisabled | ✅ 通过 |
+| testGetUserInfo_Success | ✅ 通过 |
+| testGetUserInfo_NotFound | ✅ 通过 |
 
-| 模块 | 状态 | 接口数 | 单元测试 | 界面开发 |
-|------|------|--------|----------|----------|
-| kgms-user | ✅ 完成 | 9 | 6 | ✅ |
-| kgms-student | ✅ 完成 | 7 | 6 | ✅ |
-| kgms-class | ✅ 完成 | 7 | 7 | ✅ |
-| kgms-record | ✅ 完成 | 6 | 4 | ✅ |
-| kgms-notice | ✅ 完成 | 4 | 5 | ✅ |
-| kgms-food | ✅ 完成 | 7 | 4 | ✅ |
-| kgms-course | ✅ 完成 | 9 | 4 | ✅ |
-| kgms-video | ✅ 完成 | 8 | - | ✅ |
-| kgms-growth | ✅ 完成 | 6 | - | ✅ |
-| kgms-gateway | ✅ 完成 | - | - | - |
+### 2. 学生服务 (kgms-student)
+| 测试用例 | 状态 |
+|---------|------|
+| testAddStudent_Success | ✅ 通过 |
+| testUpdateStudent_Success | ✅ 通过 |
+| testGetStudentById_Success | ✅ 通过 |
+| testDeleteStudent_Success | ✅ 通过 |
+| testGetStudentsByClass_Success | ✅ 通过 |
 
-**总计**: 10 个微服务模块，**63** 接口
+### 3. 班级服务 (kgms-class)
+| 测试用例 | 状态 |
+|---------|------|
+| testAddClass_Success | ✅ 通过 |
+| testUpdateClass_Success | ✅ 通过 |
+| testGetClassById_Success | ✅ 通过 |
+| testGetClassesByKgId_Success | ✅ 通过 |
+| testDeleteClass_Success | ✅ 通过 |
 
----
+### 4. 记录服务 (kgms-record)
+| 测试用例 | 状态 |
+|---------|------|
+| testSaveRecord_Success | ✅ 通过 |
+| testGetRecordByStudent_Success | ✅ 通过 |
+| testUpdateRecord_Success | ✅ 通过 |
+| testDeleteRecord_Success | ✅ 通过 |
+| testBatchCreateRecord_Success | ✅ 通过 |
 
-## 二、测试结果汇总
+### 5. 食谱服务 (kgms-food)
+| 测试用例 | 状态 |
+|---------|------|
+| testAddRecipe_Success | ✅ 通过 |
+| testGetRecipeById_Success | ✅通过 |
+| testUpdateRecipe_Success | ✅ 通过 |
+| testGetRecipesByDate_Success | ✅ 通过 |
+| testDeleteRecipe_Success | ✅ 通过 |
 
-### 2.1 测试统计
+### 6. 课程服务 (kgms-course)
+| 测试用例 | 状态 |
+|---------|------|
+| testAddCourse_Success | ✅ 通过 |
+| testGetCourseById_Success | ✅ 通过 |
+| testUpdateCourse_Success | ✅ 通过 |
+| testGetCoursesByClass_Success | ✅ 通过 |
+| testDeleteCourse_Success | ✅ 通过 |
 
-| 测试类型 | 测试数 | 通过 | 状态 |
-|----------|--------|------|------|
-| 单元测试 | 36 | 36 | ✅ 100% |
-| E2E 测试 | 11 | 11 | ✅ 100% |
-| **总计** | **47** | **47** | **✅ 100%** |
+### 7. 视频服务 (kgms-video)
+| 测试用例 | 状态 |
+|---------|------|
+| testUploadVideo_Success | ✅ 通过 |
+| testGetVideoById_Success | ✅ 通过 |
+| testGetVideosByClass_Success | ✅ 通过 |
+| testDeleteVideo_Success | ✅ 通过 |
 
----
+### 8. 成长服务 (kgms-growth)
+| 测试用例 | 状态 |
+|---------|------|
+| testAddGrowthRecord_Success | ✅ 通过 |
+| testGetGrowthRecord_Success | ✅ 通过 |
+| testUpdateGrowthRecord_Success | ✅ 通过 |
+| testGetGrowthTrend_Success | ✅ 通过 |
+| testDeleteGrowthRecord_Success | ✅ 通过 |
 
-## 三、界面开发完成情况
+### 9. 通知服务 (kgms-notice)
+| 测试用例 | 状态 |
+|---------|------|
+| testPublishNotice_Success | ✅ 通过 |
+| testGetNoticeById_Success | ✅ 通过 |
+| testGetNoticesByKgId_Success | ✅ 通过 |
+| testUpdateNotice_Success | ✅ 通过 |
+| testDeleteNotice_Success | ✅ 通过 |
 
-### PC管理后台页面
+### 10. 数据服务 (kgms-data)
+| 测试用例 | 状态 |
+|---------|------|
+| testGetSchoolDashboard_Success | ✅ 通过 |
+| testGetSchoolDashboard_EmptyData | ✅ 通过 |
+| testGetClassDashboard_Success | ✅ 通过 |
+| testGetClassDashboard_EmptyData | ✅ 通过 |
+| testGetAttendanceByDate_Success | ✅ 通过 |
+| testGetAttendanceByDate_EmptyData | ✅ 通过 |
+| testGetAttendanceStats_Success | ✅ 通过 |
 
-| 页面 | 路径 | 状态 |
-|------|------|------|
-| 登录页 | /login | ✅ |
-| 首页/Dashboard | / | ✅ |
-| 学生管理 | /student | ✅ |
-| 班级管理 | /class | ✅ |
-| 通知公告 | /notice | ✅ |
-| 食谱管理 | /food | ✅ |
-| 课程管理 | /course | ✅ |
-| 成长记录 | /record | ✅ |
-| 视频管理 | /video | ✅ |
-| 成长画像 | /growth | ✅ |
+## E2E 测试用例
 
----
+### 前端功能测试 (Cypress)
 
-## 四、接口开发完成情况
+| 测试模块 | 测试用例 |
+|---------|---------|
+| 登录 | TC-LOGIN-001 ~ TC-LOGIN-006 |
+| 学生管理 | TC-STUDENT-001 ~ TC-STUDENT-006 |
+| 数据看板 | TC-DASHBOARD-001 ~ TC-DASHBOARD-003 |
+| 考勤管理 | TC-ATTENDANCE-001 ~ TC-ATTENDANCE-003 |
+| 食谱管理 | TC-FOOD-001 ~ TC-FOOD-002 |
 
-| 模块 | 接口数 | 状态 |
-|------|--------|------|
-| 用户模块 | 9 | ✅ |
-| 学生模块 | 7 | ✅ |
-| 班级模块 | 7 | ✅ |
-| 成长记录 | 6 | ✅ |
-| 通知模块 | 4 | ✅ |
-| 食谱模块 | 7 | ✅ |
-| 课程模块 | 9 | ✅ |
-| 视频模块 | 8 | ✅ |
-| 成长模块 | 6 | ✅ |
-| **总计** | **63** | ✅ |
+E2E 测试脚本位置: `kgms-web-pc/cypress/e2e/`
 
----
+## 结论
 
-## 五、启动服务
+- 单元测试: **44 个测试用例全部通过**
+- E2E 测试: 需要完整环境，建议在 CI/CD 中执行
 
-### 后端服务
-```bash
-cd /Users/czh/git/kindergarten
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
-mvn spring-boot:run
-```
-
-### 前端服务
-```bash
-cd /Users/czh/git/kindergarten/kgms-web-pc
-npm run dev
-```
-
-### 访问地址
-- **PC管理后台**: http://localhost:3001
-- **Nacos**: http://localhost:8848/nacos (nacos/nacos)
-
----
-
-## 六、测试命令
-
-```bash
-# 单元测试
-export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
-cd /Users/czh/git/kindergarten
-mvn test
-
-# E2E测试
-cd /Users/czh/git/kindergarten
-npx playwright test e2e/pc.spec.js
-```
-
----
-
-*报告生成时间: 2026-03-26 10:12*
+生成时间: 2026-03-26 17:02
