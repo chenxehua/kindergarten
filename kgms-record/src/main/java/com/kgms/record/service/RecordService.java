@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.kgms.common.exception.BusinessException;
 import com.kgms.common.result.PageResult;
 import com.kgms.common.util.IdGenerator;
+import com.kgms.record.dto.BatchRecordDTO;
 import com.kgms.record.dto.RecordDTO;
 import com.kgms.record.dto.RecordVO;
 import com.kgms.record.entity.GrowthRecord;
@@ -234,5 +235,21 @@ public class RecordService {
         vo.setPublishStatus(record.getPublishStatus());
         vo.setPublishTime(record.getPublishTime());
         return vo;
+    }
+
+    /**
+     * 批量创建记录
+     */
+    @Transactional
+    public void batchCreateRecord(com.kgms.record.dto.BatchRecordDTO dto) {
+        for (String studentId : dto.getStudentIds()) {
+            RecordDTO recordDTO = new RecordDTO();
+            recordDTO.setStudentId(studentId);
+            recordDTO.setRecordDate(dto.getRecordDate());
+            recordDTO.setOverallNote(dto.getContent());
+            // TODO: 设置其他字段
+            saveRecord(recordDTO, dto.getClassId(), dto.getClassId(), true);
+        }
+        log.info("Batch created {} records for class {}", dto.getStudentIds().size(), dto.getClassId());
     }
 }
