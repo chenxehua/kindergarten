@@ -6,7 +6,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3307/kgms
     username: root
-    password: tldevops2026
+    password: root
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
