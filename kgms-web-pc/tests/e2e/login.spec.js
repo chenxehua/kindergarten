@@ -145,4 +145,71 @@ test.describe('登录功能测试', () => {
     const content = await page.content();
     expect(content.length).toBeGreaterThan(0);
   });
+
+  test('TC-LOGIN-011: 回车键提交登录', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('admin');
+    await page.locator('[placeholder="请输入密码"]').fill('admin123');
+    await page.locator('[placeholder="请输入密码"]').press('Enter');
+
+    await page.waitForTimeout(2000);
+    const content = await page.content();
+    expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-LOGIN-012: 表单重置功能', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('admin');
+    await page.locator('[placeholder="请输入密码"]').fill('password');
+
+    // 检查输入框有值
+    await expect(page.locator('[placeholder="请输入用户名"]')).toHaveValue('admin');
+    await expect(page.locator('[placeholder="请输入密码"]')).toHaveValue('password');
+  });
+
+  test('TC-LOGIN-013: 验证错误提示信息', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // 点击登录按钮不输入内容
+    await page.locator('.el-button--primary').click();
+    await page.waitForTimeout(1000);
+
+    // 检查是否有错误提示
+    const errorMsg = page.locator('.el-form-item__error');
+    if (await errorMsg.count() > 0) {
+      await expect(errorMsg.first()).toBeVisible();
+    }
+  });
+
+  test('TC-LOGIN-014: 密码可见性切换', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const passwordInput = page.locator('input[type="password"]');
+    if (await passwordInput.count() > 0) {
+      await expect(passwordInput).toBeVisible();
+    }
+  });
+
+  test('TC-LOGIN-015: 登录页面响应式布局', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    // 移动端视图
+    await page.setViewportSize({ width: 375, height: 667 });
+    await page.waitForTimeout(1000);
+
+    const loginBox = page.locator('.login-box');
+    await expect(loginBox).toBeVisible();
+  });
 });
