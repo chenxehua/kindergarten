@@ -5,6 +5,8 @@ import com.kgms.food.dto.RecipeVO;
 import com.kgms.food.entity.FoodRecipe;
 import com.kgms.food.mapper.FoodRecipeMapper;
 import com.kgms.common.exception.BusinessException;
+import com.kgms.student.entity.StudentInfo;
+import com.kgms.student.mapper.StudentInfoMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +27,9 @@ class RecipeServiceTest {
 
     @Mock
     private FoodRecipeMapper recipeMapper;
+
+    @Mock
+    private StudentInfoMapper studentInfoMapper;
 
     @InjectMocks
     private RecipeService recipeService;
@@ -112,5 +117,75 @@ class RecipeServiceTest {
         // Then
         assertNotNull(list);
         assertEquals(1, list.size());
+    }
+
+    /**
+     * TC-FOOD-005: 过敏食物检查 - 无过敏风险
+     */
+    @Test
+    void testCheckAllergy_NoAllergy() {
+        // Given
+        StudentInfo student = new StudentInfo();
+        student.setStudentId("stu_001");
+        student.setAllergyInfo("鸡蛋,牛奶"); // 学生有过敏信息
+
+        testRecipe.setMonday("米饭,青菜,猪肉");
+        testRecipe.setTuesday("面条,黄瓜,鸡肉");
+        testRecipe.setWednesday("粥,土豆,牛肉");
+        testRecipe.setThursday("米饭,番茄,鱼肉");
+        testRecipe.setFriday("馒头,白菜,猪肉");
+        testRecipe.setSaturday("米饭,萝卜,鸡肉");
+        testRecipe.setSunday("面条,青椒,牛肉");
+
+        when(studentInfoMapper.selectOne(any())).thenReturn(student);
+        when(recipeMapper.selectOne(any())).thenReturn(testRecipe);
+
+        // When
+        boolean hasAllergy = recipeService.checkAllergy("stu_001", "recipe_001");
+
+        // Then
+        assertFalse(hasAllergy);
+    }
+
+    /**
+     * TC-FOOD-006: 过敏食物检查 - 有过敏风险
+     */
+    @Test
+    void testCheckAllergy_HasAllergy() {
+        // Given
+        StudentInfo student = new StudentInfo();
+        student.setStudentId("stu_001");
+        student.setAllergyInfo("鸡蛋,牛奶"); // 学生对鸡蛋过敏
+
+        testRecipe.setMonday("鸡蛋羹,牛奶,面包"); // 包含过敏食物
+
+        when(studentInfoMapper.selectOne(any())).thenReturn(student);
+        when(recipeMapper.selectOne(any())).thenReturn(testRecipe);
+
+        // When
+        boolean hasAllergy = recipeService.checkAllergy("stu_001", "recipe_001");
+
+        // Then
+        assertTrue(hasAllergy);
+    }
+
+    /**
+     * TC-FOOD-007: 过敏食物检查 - 学生无过敏信息
+     */
+    @Test
+    void testCheckAllergy_NoAllergyInfo() {
+        // Given
+        StudentInfo student = new StudentInfo();
+        student.setStudentId("stu_001");
+        student.setAllergyInfo(null); // 无过敏信息
+
+        when(studentInfoMapper.selectOne(any())).thenReturn(student);
+        when(recipeMapper.selectOne(any())).thenReturn(testRecipe);
+
+        // When
+        boolean hasAllergy = recipeService.checkAllergy("stu_001", "recipe_001");
+
+        // Then
+        assertFalse(hasAllergy);
     }
 }

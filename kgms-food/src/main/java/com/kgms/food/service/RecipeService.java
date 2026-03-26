@@ -7,6 +7,8 @@ import com.kgms.food.dto.RecipeDTO;
 import com.kgms.food.dto.RecipeVO;
 import com.kgms.food.entity.FoodRecipe;
 import com.kgms.food.mapper.FoodRecipeMapper;
+import com.kgms.student.entity.StudentInfo;
+import com.kgms.student.mapper.StudentInfoMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,8 @@ import java.time.LocalDate;
 import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -24,6 +28,7 @@ import java.util.List;
 public class RecipeService {
 
     private final FoodRecipeMapper recipeMapper;
+    private final StudentInfoMapper studentInfoMapper;
 
     @Transactional
     public String addRecipe(RecipeDTO dto) {
@@ -118,6 +123,70 @@ public class RecipeService {
             voList.add(convertToVO(recipe));
         }
         return voList;
+    }
+
+    /**
+     * 检查过敏食物
+     * 根据学生过敏信息和食谱内容，判断是否有过敏风险
+     */
+    public boolean checkAllergy(String studentId, String recipeId) {
+        // 获取学生过敏信息
+        StudentInfo student = studentInfoMapper.selectOne(
+                new LambdaQueryWrapper<StudentInfo>().eq(StudentInfo::getStudentId, studentId)
+        );
+
+        if (student == null || student.getAllergyInfo() == null || student.getAllergyInfo().isEmpty()) {
+            return false; // 无过敏信息
+        }
+
+        // 获取食谱内容
+        FoodRecipe recipe = getRecipeById(recipeId);
+        if (recipe == null) {
+            return false;
+        }
+
+        // 解析学生过敏信息
+        Set<String> allergies = parseAllergies(student.getAllergyInfo());
+
+        // 检查每日食谱是否包含过敏食物
+        boolean hasAllergy = checkRecipeContainsAllergy(recipe, allergies);
+
+        log.info("过敏检查: studentId={}, recipeId={}, hasAllergy={}", studentId, recipeId, hasAllergy);
+        return hasAllergy;
+    }
+
+    private Set<String> parseAllergies(String allergyInfo) {
+        // 过敏信息格式: "鸡蛋,牛奶,花生" 或 JSON数组
+        if (allergyInfo == null || allergyInfo.isEmpty()) {
+            return java.util.Collections.emptySet();
+        }
+        return java.util.Arrays.stream(allergyInfo.split("[,，]"))
+                .map(s -> s.trim().toLowerCase())
+                .filter(s -> !s.isEmpty())
+                .collect(java.util.stream.Collectors.toSet());
+    }
+
+    private boolean checkRecipeContainsAllergy(FoodRecipe recipe, Set<String> allergies) {
+        if (allergies.isEmpty()) {
+            return false;
+        }
+
+        // 检查每天的食谱
+        String[] days = {recipe.getMonday(), recipe.getTuesday(), recipe.getWednesday(),
+                recipe.getThursday(), recipe.getFriday(), recipe.getSaturday(), recipe.getSunday()};
+
+        for (String dayRecipe : days) {
+            if (dayRecipe != null && !dayRecipe.isEmpty()) {
+                String recipeLower = dayRecipe.toLowerCase();
+                for (String allergy : allergies) {
+                    if (recipeLower.contains(allergy)) {
+                        log.warn("检测到过敏食物: allergy={}, recipe={}", allergy, dayRecipe);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private FoodRecipe getRecipeById(String recipeId) {

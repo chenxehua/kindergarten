@@ -83,8 +83,6 @@ public class RecipeController {
     public Result<Boolean> checkAllergy(
             @RequestParam String studentId,
             @RequestParam String recipeId) {
-        // TODO: 检查学生过敏信息与食谱是否冲突
-        // 根据学生过敏信息和食谱内容，判断是否有过敏风险
-        return Result.success(false);
+        return Result.success(recipeService.checkAllergy(studentId, recipeId));
     }
 }

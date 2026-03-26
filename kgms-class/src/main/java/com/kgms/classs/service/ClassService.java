@@ -10,6 +10,10 @@ import com.kgms.classs.mapper.ClassInfoMapper;
 import com.kgms.common.exception.BusinessException;
 import com.kgms.common.result.PageResult;
 import com.kgms.common.util.IdGenerator;
+import com.kgms.student.dto.StudentVO;
+import com.kgms.student.service.StudentService;
+import com.kgms.user.entity.TeacherInfo;
+import com.kgms.user.mapper.TeacherInfoMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -24,6 +28,8 @@ import java.util.stream.Collectors;
 public class ClassService {
 
     private final ClassInfoMapper classInfoMapper;
+    private final StudentService studentService;
+    private final TeacherInfoMapper teacherInfoMapper;
 
     public String addClass(ClassDTO dto) {
         ClassInfo classInfo = new ClassInfo();
@@ -113,5 +119,19 @@ public class ClassService {
         vo.setStudentCount(classInfo.getStudentCount());
         vo.setStatus(classInfo.getStatus());
         return vo;
+    }
+
+    /**
+     * 获取班级学生列表
+     */
+    public List<StudentVO> getClassStudents(String classId) {
+        return studentService.getStudentsByClassId(classId);
+    }
+
+    /**
+     * 获取班级老师列表
+     */
+    public List<TeacherInfo> getClassTeachers(String classId) {
+        return teacherInfoMapper.selectByClassId(classId);
     }
 }

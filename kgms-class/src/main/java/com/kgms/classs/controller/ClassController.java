@@ -5,6 +5,8 @@ import com.kgms.classs.dto.ClassVO;
 import com.kgms.classs.service.ClassService;
 import com.kgms.common.result.PageResult;
 import com.kgms.common.result.Result;
+import com.kgms.student.dto.StudentVO;
+import com.kgms.user.entity.TeacherInfo;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -75,17 +77,15 @@ public class ClassController {
      * 获取班级学生列表 - TC-CLASS-002
      */
     @GetMapping("/students")
-    public Result<Object> getClassStudents(@RequestParam String classId) {
-        // TODO: 调用学生服务获取班级学生列表
-        return Result.success(null);
+    public Result<List<StudentVO>> getClassStudents(@RequestParam String classId) {
+        return Result.success(classService.getClassStudents(classId));
     }
 
     /**
      * 获取班级老师列表 - TC-CLASS-003
      */
     @GetMapping("/teachers")
-    public Result<Object> getClassTeachers(@RequestParam String classId) {
-        // TODO: 调用用户服务获取班级老师列表
-        return Result.success(null);
+    public Result<List<TeacherInfo>> getClassTeachers(@RequestParam String classId) {
+        return Result.success(classService.getClassTeachers(classId));
     }
 }

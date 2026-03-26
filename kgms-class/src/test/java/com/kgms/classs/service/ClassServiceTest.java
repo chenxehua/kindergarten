@@ -6,6 +6,10 @@ import com.kgms.classs.entity.ClassInfo;
 import com.kgms.classs.mapper.ClassInfoMapper;
 import com.kgms.common.exception.BusinessException;
 import com.kgms.common.result.PageResult;
+import com.kgms.student.dto.StudentVO;
+import com.kgms.student.service.StudentService;
+import com.kgms.user.entity.TeacherInfo;
+import com.kgms.user.mapper.TeacherInfoMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -26,6 +30,12 @@ class ClassServiceTest {
 
     @Mock
     private ClassInfoMapper classInfoMapper;
+
+    @Mock
+    private StudentService studentService;
+
+    @Mock
+    private TeacherInfoMapper teacherInfoMapper;
 
     @InjectMocks
     private ClassService classService;
@@ -177,5 +187,49 @@ class ClassServiceTest {
         assertNotNull(list);
         assertEquals(1, list.size());
         assertEquals("星星班", list.get(0).getClassName());
+    }
+
+    /**
+     * TC-CLASS-006: 获取班级学生列表 - 成功
+     */
+    @Test
+    void testGetClassStudents_Success() {
+        // Given
+        StudentVO student = new StudentVO();
+        student.setStudentId("stu_001");
+        student.setStudentName("张三");
+
+        when(studentService.getStudentsByClassId("class_001")).thenReturn(Arrays.asList(student));
+
+        // When
+        List<StudentVO> students = classService.getClassStudents("class_001");
+
+        // Then
+        assertNotNull(students);
+        assertEquals(1, students.size());
+        assertEquals("stu_001", students.get(0).getStudentId());
+        verify(studentService, times(1)).getStudentsByClassId("class_001");
+    }
+
+    /**
+     * TC-CLASS-007: 获取班级老师列表 - 成功
+     */
+    @Test
+    void testGetClassTeachers_Success() {
+        // Given
+        TeacherInfo teacher = new TeacherInfo();
+        teacher.setTeacherId("teacher_001");
+        teacher.setTeacherName("李老师");
+
+        when(teacherInfoMapper.selectByClassId("class_001")).thenReturn(Arrays.asList(teacher));
+
+        // When
+        List<TeacherInfo> teachers = classService.getClassTeachers("class_001");
+
+        // Then
+        assertNotNull(teachers);
+        assertEquals(1, teachers.size());
+        assertEquals("teacher_001", teachers.get(0).getTeacherId());
+        verify(teacherInfoMapper, times(1)).selectByClassId("class_001");
     }
 }
