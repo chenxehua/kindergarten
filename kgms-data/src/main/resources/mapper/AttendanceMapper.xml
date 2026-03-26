@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kgms.data.mapper.AttendanceMapper">
+
+    <resultMap id="BaseResultMap" type="com.kgms.data.entity.Attendance">
+        <id column="id" property="id"/>
+        <result column="attendance_id" property="attendanceId"/>
+        <result column="student_id" property="studentId"/>
+        <result column="class_id" property="classId"/>
+        <result column="kg_id" property="kgId"/>
+        <result column="attendance_date" property="attendanceDate"/>
+        <result column="check_in_time" property="checkInTime"/>
+        <result column="check_in_photo" property="checkInPhoto"/>
+        <result column="check_out_time" property="checkOutTime"/>
+        <result column="check_out_photo" property="checkOutPhoto"/>
+        <result column="status" property="status"/>
+        <result column="leave_type" property="leaveType"/>
+        <result column="leave_reason" property="leaveReason"/>
+        <result column="pickup_person" property="pickupPerson"/>
+        <result column="pickup_relation" property="pickupRelation"/>
+        <result column="apply_by" property="applyBy"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="approve_status" property="approveStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_attendance WHERE id = #{id}
+    </select>
+
+    <select id="selectByAttendanceId" resultMap="BaseResultMap">
+        SELECT * FROM t_attendance WHERE attendance_id = #{attendanceId}
+    </select>
+
+    <select id="selectByStudentIdAndDateRange" resultMap="BaseResultMap">
+        SELECT * FROM t_attendance
+        WHERE student_id = #{studentId}
+        AND attendance_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY attendance_date DESC
+    </select>
+
+    <select id="selectByClassIdAndDate" resultMap="BaseResultMap">
+        SELECT * FROM t_attendance
+        WHERE class_id = #{classId} AND attendance_date = #{attendanceDate}
+    </select>
+
+    <select id="selectAttendanceStats" resultMap="BaseResultMap">
+        SELECT
+            student_id,
+            COUNT(*) as total_days,
+            SUM(CASE WHEN status = 'NORMAL' THEN 1 ELSE 0 END) as present_days,
+            SUM(CASE WHEN status = 'ABSENT' THEN 1 ELSE 0 END) as absent_days,
+            SUM(CASE WHEN status = 'LEAVE' THEN 1 ELSE 0 END) as leave_days,
+            SUM(CASE WHEN status = 'LATE' THEN 1 ELSE 0 END) as late_days
+        FROM t_attendance
+        WHERE class_id = #{classId}
+        AND attendance_date BETWEEN #{startDate} AND #{endDate}
+        GROUP BY student_id
+    </select>
+
+    <insert id="insert" parameterType="com.kgms.data.entity.Attendance" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_attendance (
+            attendance_id, student_id, class_id, kg_id, attendance_date,
+            check_in_time, check_in_photo, check_out_time, check_out_photo,
+            status, leave_type, leave_reason, pickup_person, pickup_relation,
+            apply_by, approve_by, approve_time, approve_status
+        ) VALUES (
+            #{attendanceId}, #{studentId}, #{classId}, #{kgId}, #{attendanceDate},
+            #{checkInTime}, #{checkInPhoto}, #{checkOutTime}, #{checkOutPhoto},
+            #{status}, #{leaveType}, #{leaveReason}, #{pickupPerson}, #{pickupRelation},
+            #{applyBy}, #{approveBy}, #{approveTime}, #{approveStatus}
+        )
+    </insert>
+
+    <update id="updateByAttendanceId" parameterType="com.kgms.data.entity.Attendance">
+        UPDATE t_attendance SET
+            check_in_time = #{checkInTime},
+            check_in_photo = #{checkInPhoto},
+            check_out_time = #{checkOutTime},
+            check_out_photo = #{checkOutPhoto},
+            status = #{status},
+            leave_type = #{leaveType},
+            leave_reason = #{leaveReason},
+            pickup_person = #{pickupPerson},
+            pickup_relation = #{pickupRelation}
+        WHERE attendance_id = #{attendanceId}
+    </update>
+
+    <delete id="deleteByAttendanceId">
+        DELETE FROM t_attendance WHERE attendance_id = #{attendanceId}
+    </delete>
+</mapper>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kgms.data.mapper.DashboardSnapshotMapper">
+
+    <resultMap id="BaseResultMap" type="com.kgms.data.entity.DashboardSnapshot">
+        <id column="id" property="id"/>
+        <result column="snapshot_id" property="snapshotId"/>
+        <result column="kg_id" property="kgId"/>
+        <result column="snapshot_date" property="snapshotDate"/>
+        <result column="snapshot_type" property="snapshotType"/>
+        <result column="total_students" property="totalStudents"/>
+        <result column="new_students" property="newStudents"/>
+        <result column="left_students" property="leftStudents"/>
+        <result column="attendance_rate" property="attendanceRate"/>
+        <result column="absent_count" property="absentCount"/>
+        <result column="leave_count" property="leaveCount"/>
+        <result column="late_count" property="lateCount"/>
+        <result column="total_records" property="totalRecords"/>
+        <result column="published_records" property="publishedRecords"/>
+        <result column="total_photos" property="totalPhotos"/>
+        <result column="active_parents" property="activeParents"/>
+        <result column="message_count" property="messageCount"/>
+        <result column="total_courses" property="totalCourses"/>
+        <result column="completed_courses" property="completedCourses"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_dashboard_snapshot WHERE id = #{id}
+    </select>
+
+    <select id="selectBySnapshotId" resultMap="BaseResultMap">
+        SELECT * FROM t_dashboard_snapshot WHERE snapshot_id = #{snapshotId}
+    </select>
+
+    <select id="selectByKgIdAndDateRange" resultMap="BaseResultMap">
+        SELECT * FROM t_dashboard_snapshot
+        WHERE kg_id = #{kgId}
+        AND snapshot_date BETWEEN #{startDate} AND #{endDate}
+        <if test="snapshotType != null">
+            AND snapshot_type = #{snapshotType}
+        </if>
+        ORDER BY snapshot_date DESC
+    </select>
+
+    <insert id="insert" parameterType="com.kgms.data.entity.DashboardSnapshot" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_dashboard_snapshot (
+            snapshot_id, kg_id, snapshot_date, snapshot_type,
+            total_students, new_students, left_students,
+            attendance_rate, absent_count, leave_count, late_count,
+            total_records, published_records, total_photos,
+            active_parents, message_count, total_courses, completed_courses
+        ) VALUES (
+            #{snapshotId}, #{kgId}, #{snapshotDate}, #{snapshotType},
+            #{totalStudents}, #{newStudents}, #{leftStudents},
+            #{attendanceRate}, #{absentCount}, #{leaveCount}, #{lateCount},
+            #{totalRecords}, #{publishedRecords}, #{totalPhotos},
+            #{activeParents}, #{messageCount}, #{totalCourses}, #{completedCourses}
+        )
+    </insert>
+
+    <update id="updateBySnapshotId" parameterType="com.kgms.data.entity.DashboardSnapshot">
+        UPDATE t_dashboard_snapshot SET
+            total_students = #{totalStudents},
+            new_students = #{newStudents},
+            left_students = #{leftStudents},
+            attendance_rate = #{attendanceRate},
+            absent_count = #{absentCount},
+            leave_count = #{leaveCount},
+            late_count = #{lateCount},
+            total_records = #{totalRecords},
+            published_records = #{publishedRecords},
+            total_photos = #{totalPhotos},
+            active_parents = #{activeParents},
+            message_count = #{messageCount},
+            total_courses = #{totalCourses},
+            completed_courses = #{completedCourses}
+        WHERE snapshot_id = #{snapshotId}
+    </update>
+
+    <delete id="deleteBySnapshotId">
+        DELETE FROM t_dashboard_snapshot WHERE snapshot_id = #{snapshotId}
+    </delete>
+</mapper>

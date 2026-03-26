@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kgms.data.mapper.MessageMapper">
+
+    <resultMap id="BaseResultMap" type="com.kgms.data.entity.Message">
+        <id column="id" property="id"/>
+        <result column="message_id" property="messageId"/>
+        <result column="conversation_id" property="conversationId"/>
+        <result column="sender_id" property="senderId"/>
+        <result column="sender_type" property="senderType"/>
+        <result column="receiver_id" property="receiverId"/>
+        <result column="receiver_type" property="receiverType"/>
+        <result column="message_type" property="messageType"/>
+        <result column="content" property="content"/>
+        <result column="media_url" property="mediaUrl"/>
+        <result column="media_duration" property="mediaDuration"/>
+        <result column="is_read" property="isRead"/>
+        <result column="read_time" property="readTime"/>
+        <result column="create_time" property="createTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_message WHERE id = #{id}
+    </select>
+
+    <select id="selectByMessageId" resultMap="BaseResultMap">
+        SELECT * FROM t_message WHERE message_id = #{messageId}
+    </select>
+
+    <select id="selectByConversationId" resultMap="BaseResultMap">
+        SELECT * FROM t_message
+        WHERE conversation_id = #{conversationId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectConversationList" resultMap="BaseResultMap">
+        SELECT m.* FROM t_message m
+        INNER JOIN (
+            SELECT conversation_id, MAX(create_time) as max_time
+            FROM t_message
+            WHERE receiver_id = #{userId} OR sender_id = #{userId}
+            GROUP BY conversation_id
+        ) latest ON m.conversation_id = latest.conversation_id AND m.create_time = latest.max_time
+        ORDER BY m.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.kgms.data.entity.Message" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_message (
+            message_id, conversation_id, sender_id, sender_type, receiver_id, receiver_type,
+            message_type, content, media_url, media_duration, is_read, read_time
+        ) VALUES (
+            #{messageId}, #{conversationId}, #{senderId}, #{senderType}, #{receiverId}, #{receiverType},
+            #{messageType}, #{content}, #{mediaUrl}, #{mediaDuration}, #{isRead}, #{readTime}
+        )
+    </insert>
+
+    <update id="updateByMessageId" parameterType="com.kgms.data.entity.Message">
+        UPDATE t_message SET
+            content = #{content},
+            media_url = #{mediaUrl},
+            is_read = #{isRead},
+            read_time = #{readTime}
+        WHERE message_id = #{messageId}
+    </update>
+
+    <delete id="deleteByMessageId">
+        DELETE FROM t_message WHERE message_id = #{messageId}
+    </delete>
+
+    <update id="markAsRead">
+        UPDATE t_message SET
+            is_read = 1,
+            read_time = NOW()
+        WHERE conversation_id = #{conversationId}
+        AND receiver_id = #{receiverId}
+        AND is_read = 0
+    </update>
+</mapper>

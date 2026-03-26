@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kgms.data.mapper.ActivityMapper">
+
+    <resultMap id="BaseResultMap" type="com.kgms.data.entity.Activity">
+        <id column="id" property="id"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="kg_id" property="kgId"/>
+        <result column="activity_name" property="activityName"/>
+        <result column="activity_type" property="activityType"/>
+        <result column="activity_time" property="activityTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="location" property="location"/>
+        <result column="description" property="description"/>
+        <result column="process" property="process"/>
+        <result column="target_type" property="targetType"/>
+        <result column="target_ids" property="targetIds"/>
+        <result column="max_participants" property="maxParticipants"/>
+        <result column="fee" property="fee"/>
+        <result column="fee_description" property="feeDescription"/>
+        <result column="require_signup" property="requireSignup"/>
+        <result column="signup_deadline" property="signupDeadline"/>
+        <result column="status" property="status"/>
+        <result column="publish_time" property="publishTime"/>
+        <result column="principal_id" property="principalId"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_activity WHERE id = #{id}
+    </select>
+
+    <select id="selectByActivityId" resultMap="BaseResultMap">
+        SELECT * FROM t_activity WHERE activity_id = #{activityId}
+    </select>
+
+    <select id="selectByKgId" resultMap="BaseResultMap">
+        SELECT * FROM t_activity WHERE kg_id = #{kgId} ORDER BY activity_time DESC
+    </select>
+
+    <select id="selectByClassId" resultMap="BaseResultMap">
+        SELECT * FROM t_activity
+        WHERE JSON_CONTAINS(target_ids, #{classId}, '$')
+        ORDER BY activity_time DESC
+    </select>
+
+    <select id="selectActivityList" resultMap="BaseResultMap">
+        SELECT * FROM t_activity
+        WHERE kg_id = #{kgId}
+        <if test="activityType != null">
+            AND activity_type = #{activityType}
+        </if>
+        <if test="status != null">
+            AND status = #{status}
+        </if>
+        <if test="startDate != null">
+            AND activity_time >= #{startDate}
+        </if>
+        <if test="endDate != null">
+            AND activity_time &lt;= #{endDate}
+        </if>
+        ORDER BY activity_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.kgms.data.entity.Activity" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_activity (
+            activity_id, kg_id, activity_name, activity_type,
+            activity_time, end_time, location, description, process,
+            target_type, target_ids, max_participants, fee, fee_description,
+            require_signup, signup_deadline, status, publish_time,
+            principal_id, create_by
+        ) VALUES (
+            #{activityId}, #{kgId}, #{activityName}, #{activityType},
+            #{activityTime}, #{endTime}, #{location}, #{description}, #{process},
+            #{targetType}, #{targetIds}, #{maxParticipants}, #{fee}, #{feeDescription},
+            #{requireSignup}, #{signupDeadline}, #{status}, #{publishTime},
+            #{principalId}, #{createBy}
+        )
+    </insert>
+
+    <update id="updateByActivityId" parameterType="com.kgms.data.entity.Activity">
+        UPDATE t_activity SET
+            activity_name = #{activityName},
+            activity_type = #{activityType},
+            activity_time = #{activityTime},
+            end_time = #{endTime},
+            location = #{location},
+            description = #{description},
+            process = #{process},
+            target_type = #{targetType},
+            target_ids = #{targetIds},
+            max_participants = #{maxParticipants},
+            fee = #{fee},
+            fee_description = #{feeDescription},
+            require_signup = #{requireSignup},
+            signup_deadline = #{signupDeadline},
+            status = #{status},
+            publish_time = #{publishTime}
+        WHERE activity_id = #{activityId}
+    </update>
+
+    <delete id="deleteByActivityId">
+        DELETE FROM t_activity WHERE activity_id = #{activityId}
+    </delete>
+</mapper>

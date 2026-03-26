@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kgms.data.mapper.ActivitySignupMapper">
+
+    <resultMap id="BaseResultMap" type="com.kgms.data.entity.ActivitySignup">
+        <id column="id" property="id"/>
+        <result column="signup_id" property="signupId"/>
+        <result column="activity_id" property="activityId"/>
+        <result column="student_id" property="studentId"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="approve_remark" property="approveRemark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_activity_signup WHERE id = #{id}
+    </select>
+
+    <select id="selectBySignupId" resultMap="BaseResultMap">
+        SELECT * FROM t_activity_signup WHERE signup_id = #{signupId}
+    </select>
+
+    <select id="selectByActivityAndStudent" resultMap="BaseResultMap">
+        SELECT * FROM t_activity_signup
+        WHERE activity_id = #{activityId} AND student_id = #{studentId}
+    </select>
+
+    <select id="selectByActivityId" resultMap="BaseResultMap">
+        SELECT * FROM t_activity_signup
+        WHERE activity_id = #{activityId}
+        ORDER BY create_time DESC
+    </select>
+
+    <select id="selectSignupListWithStudent" resultMap="BaseResultMap">
+        SELECT s.*, st.student_name
+        FROM t_activity_signup s
+        LEFT JOIN t_student_info st ON s.student_id = st.student_id
+        WHERE s.activity_id = #{activityId}
+        ORDER BY s.create_time DESC
+    </select>
+
+    <insert id="insert" parameterType="com.kgms.data.entity.ActivitySignup" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_activity_signup (
+            signup_id, activity_id, student_id, parent_id,
+            status, remark, approve_by, approve_time, approve_remark
+        ) VALUES (
+            #{signupId}, #{activityId}, #{studentId}, #{parentId},
+            #{status}, #{remark}, #{approveBy}, #{approveTime}, #{approveRemark}
+        )
+    </insert>
+
+    <update id="updateBySignupId" parameterType="com.kgms.data.entity.ActivitySignup">
+        UPDATE t_activity_signup SET
+            status = #{status},
+            remark = #{remark},
+            approve_by = #{approveBy},
+            approve_time = #{approveTime},
+            approve_remark = #{approveRemark}
+        WHERE signup_id = #{signupId}
+    </update>
+
+    <delete id="deleteBySignupId">
+        DELETE FROM t_activity_signup WHERE signup_id = #{signupId}
+    </delete>
+</mapper>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kgms.data.mapper.ConversationMapper">
+
+    <resultMap id="BaseResultMap" type="com.kgms.data.entity.Conversation">
+        <id column="id" property="id"/>
+        <result column="conversation_id" property="conversationId"/>
+        <result column="conversation_type" property="conversationType"/>
+        <result column="name" property="name"/>
+        <result column="avatar" property="avatar"/>
+        <result column="member_ids" property="memberIds"/>
+        <result column="member_count" property="memberCount"/>
+        <result column="owner_id" property="ownerId"/>
+        <result column="notice" property="notice"/>
+        <result column="last_message" property="lastMessage"/>
+        <result column="last_message_time" property="lastMessageTime"/>
+        <result column="is_muted" property="isMuted"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_conversation WHERE id = #{id}
+    </select>
+
+    <select id="selectByConversationId" resultMap="BaseResultMap">
+        SELECT * FROM t_conversation WHERE conversation_id = #{conversationId}
+    </select>
+
+    <select id="selectByOwnerId" resultMap="BaseResultMap">
+        SELECT * FROM t_conversation WHERE owner_id = #{ownerId} AND conversation_type = 'GROUP'
+    </select>
+
+    <insert id="insert" parameterType="com.kgms.data.entity.Conversation" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_conversation (
+            conversation_id, conversation_type, name, avatar,
+            member_ids, member_count, owner_id, notice,
+            last_message, last_message_time, is_muted
+        ) VALUES (
+            #{conversationId}, #{conversationType}, #{name}, #{avatar},
+            #{memberIds}, #{memberCount}, #{ownerId}, #{notice},
+            #{lastMessage}, #{lastMessageTime}, #{isMuted}
+        )
+    </insert>
+
+    <update id="updateByConversationId" parameterType="com.kgms.data.entity.Conversation">
+        UPDATE t_conversation SET
+            name = #{name},
+            avatar = #{avatar},
+            member_ids = #{memberIds},
+            member_count = #{memberCount},
+            notice = #{notice},
+            last_message = #{lastMessage},
+            last_message_time = #{lastMessageTime},
+            is_muted = #{isMuted}
+        WHERE conversation_id = #{conversationId}
+    </update>
+
+    <delete id="deleteByConversationId">
+        DELETE FROM t_conversation WHERE conversation_id = #{conversationId}
+    </delete>
+</mapper>
