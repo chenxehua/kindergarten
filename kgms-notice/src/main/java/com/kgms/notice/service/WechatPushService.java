@@ -195,6 +195,27 @@ public class WechatPushService {
     }
 
     /**
+     * 发送通用模板消息
+     */
+    public boolean sendTemplateMessage(String openid, String title, String content, String relatedId) {
+        // 根据relatedId判断消息类型，调用对应方法
+        if (relatedId != null) {
+            if (relatedId.startsWith("record_")) {
+                return sendRecordMessage(openid, "", "", "", content);
+            } else if (relatedId.startsWith("report_")) {
+                return sendReportMessage(openid, "", "", content);
+            } else if (relatedId.startsWith("video_")) {
+                return sendVideoMessage(openid, "", "", "");
+            } else if (relatedId.startsWith("notice_")) {
+                return sendNoticeMessage(openid, title, content, "");
+            }
+        }
+
+        // 默认发送通知消息
+        return sendNoticeMessage(openid, title, content, "");
+    }
+
+    /**
      * 发送模板消息
      */
     private boolean sendTemplateMessage(String openid, String templateId, Map<String, Object> data) {
