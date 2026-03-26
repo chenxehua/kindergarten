@@ -978,4 +978,199 @@ INSERT INTO t_video_material (material_id, material_type, material_name, materia
 ('music_002', 'MUSIC', '温馨背景乐', '/music/warm.mp3', 180, 1),
 ('music_003', 'MUSIC', '欢快儿歌', '/music/happy.mp3', 120, 1);
 
+-- =============================================
+-- 记录模板模块
+-- =============================================
+
+-- 成长记录模板表
+CREATE TABLE IF NOT EXISTS t_record_template (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    template_id        VARCHAR(32) NOT NULL UNIQUE COMMENT '模板ID',
+    template_name      VARCHAR(100) NOT NULL COMMENT '模板名称',
+    content            TEXT NOT NULL COMMENT '模板内容',
+    scenario           VARCHAR(50) COMMENT '适用场景: course/emotion/diet/activity/sleep',
+    is_default         TINYINT DEFAULT 0 COMMENT '是否默认模板',
+    use_count          INT DEFAULT 0 COMMENT '使用次数',
+    create_by           VARCHAR(32) COMMENT '创建人',
+    create_time        DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_scenario (scenario)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='成长记录模板表';
+
+-- 草稿记录表
+CREATE TABLE IF NOT EXISTS t_record_draft (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    draft_id            VARCHAR(32) NOT NULL UNIQUE COMMENT '草稿ID',
+    student_id          VARCHAR(32) NOT NULL COMMENT '学生ID',
+    teacher_id          VARCHAR(32) NOT NULL COMMENT '老师ID',
+    record_date         DATE NOT NULL COMMENT '记录日期',
+
+    -- 草稿内容(JSON)
+    content             TEXT COMMENT '草稿内容',
+    version             INT DEFAULT 1 COMMENT '版本号',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_student_date (student_id, record_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='草稿记录表';
+
+-- 插入默认模板
+INSERT INTO t_record_template (template_id, template_name, content, scenario, is_default) VALUES
+('tpl_001', '今日户外活动丰富', '今天进行了丰富的户外活动，孩子参与积极，表现活跃', 'activity', 1),
+('tpl_002', '今日午餐正常', '午餐食欲良好，不挑食，全部吃完', 'diet', 1),
+('tpl_003', '情绪稳定', '今天情绪稳定，与同伴相处融洽', 'emotion', 1),
+('tpl_004', '午休良好', '午休入睡快，睡眠质量好', 'sleep', 1);
+
+-- =============================================
+-- 消息推送模块
+-- =============================================
+
+-- 推送配置表
+CREATE TABLE IF NOT EXISTS t_push_config (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    config_id           VARCHAR(32) NOT NULL UNIQUE COMMENT '配置ID',
+    kg_id               VARCHAR(32) COMMENT '园区ID',
+    push_type           VARCHAR(20) NOT NULL COMMENT '推送类型: DAILY-每日 RECORD-成长记录 NOTICE-通知',
+
+    -- 推送设置
+    enabled             TINYINT DEFAULT 1 COMMENT '是否启用',
+    push_time           TIME COMMENT '推送时间',
+    template_id         VARCHAR(32) COMMENT '推送模板ID',
+
+    -- 免打扰设置
+    quiet_hours_start   TIME COMMENT '免打扰开始时间',
+    quiet_hours_end     TIME COMMENT '免打扰结束时间',
+    quiet_days          VARCHAR(50) COMMENT '免扰日期(周末等)',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_kg_type (kg_id, push_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='推送配置表';
+
+-- 推送记录表
+CREATE TABLE IF NOT EXISTS t_push_record (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    push_id             VARCHAR(32) NOT NULL UNIQUE COMMENT '推送ID',
+    user_id             VARCHAR(32) NOT NULL COMMENT '接收用户ID',
+    push_type           VARCHAR(20) NOT NULL COMMENT '推送类型',
+    title               VARCHAR(200) COMMENT '标题',
+    content             TEXT COMMENT '内容',
+    related_id          VARCHAR(32) COMMENT '关联业务ID',
+
+    -- 推送状态
+    channel             VARCHAR(20) COMMENT '推送渠道: WECHAT-微信 SMS-短信 APP-APP',
+    status              VARCHAR(20) DEFAULT 'PENDING' COMMENT '状态: PENDING-待发送 SENT-已发送 FAILED-失败',
+    send_time           DATETIME COMMENT '发送时间',
+    read_time           DATETIME COMMENT '阅读时间',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user (user_id, status),
+    INDEX idx_related (related_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='推送记录表';
+
+-- 插入默认推送配置
+INSERT INTO t_push_config (config_id, push_type, enabled, push_time, quiet_hours_start, quiet_hours_end) VALUES
+('push_001', 'DAILY', 1, '16:00', '22:00', '07:00'),
+('push_002', 'RECORD', 1, NULL, '22:00', '07:00'),
+('push_003', 'NOTICE', 1, NULL, '22:00', '07:00');
+
+-- =============================================
+-- 权限管理模块
+-- =============================================
+
+-- 角色表
+CREATE TABLE IF NOT EXISTS t_role (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    role_id            VARCHAR(32) NOT NULL UNIQUE COMMENT '角色ID',
+    role_name          VARCHAR(50) NOT NULL COMMENT '角色名称',
+    role_code          VARCHAR(50) NOT NULL UNIQUE COMMENT '角色编码',
+    description        VARCHAR(200) COMMENT '角色描述',
+    is_system          TINYINT DEFAULT 0 COMMENT '是否系统角色',
+    status             TINYINT DEFAULT 1 COMMENT '状态: 0-禁用 1-启用',
+    create_time        DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time        DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_role_code (role_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色表';
+
+-- 权限表
+CREATE TABLE IF NOT EXISTS t_permission (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    permission_id      VARCHAR(32) NOT NULL UNIQUE COMMENT '权限ID',
+    permission_name     VARCHAR(100) NOT NULL COMMENT '权限名称',
+    permission_code     VARCHAR(100) NOT NULL UNIQUE COMMENT '权限编码',
+    permission_type    VARCHAR(20) NOT NULL COMMENT '权限类型: MENU-菜单 BUTTON-按钮 API-接口',
+    parent_id          VARCHAR(32) COMMENT '父权限ID',
+    path               VARCHAR(200) COMMENT '路由路径',
+    component          VARCHAR(200) COMMENT '组件路径',
+    icon               VARCHAR(50) COMMENT '图标',
+    sort               INT DEFAULT 0 COMMENT '排序',
+    status             TINYINT DEFAULT 1 COMMENT '状态',
+    create_time        DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_permission_code (permission_code)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='权限表';
+
+-- 角色权限关联表
+CREATE TABLE IF NOT EXISTS t_role_permission (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    role_id            VARCHAR(32) NOT NULL COMMENT '角色ID',
+    permission_id      VARCHAR(32) NOT NULL COMMENT '权限ID',
+    create_time        DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_role_permission (role_id, permission_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='角色权限关联表';
+
+-- 用户角色关联表
+CREATE TABLE IF NOT EXISTS t_user_role (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_id            VARCHAR(32) NOT NULL COMMENT '用户ID',
+    role_id            VARCHAR(32) NOT NULL COMMENT '角色ID',
+    create_time        DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_user_role (user_id, role_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联表';
+
+-- 操作日志表
+CREATE TABLE IF NOT EXISTS t_operation_log (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    log_id             VARCHAR(32) NOT NULL UNIQUE COMMENT '日志ID',
+    user_id            VARCHAR(32) COMMENT '操作用户ID',
+    username           VARCHAR(50) COMMENT '操作用户名',
+    operation          VARCHAR(100) COMMENT '操作描述',
+    method             VARCHAR(200) COMMENT '请求方法',
+    params             TEXT COMMENT '请求参数',
+    result             TEXT COMMENT '返回结果',
+    ip                 VARCHAR(50) COMMENT 'IP地址',
+    duration           INT COMMENT '耗时(毫秒)',
+    status             TINYINT COMMENT '状态: 0-失败 1-成功',
+    create_time        DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_user (user_id),
+    INDEX idx_create_time (create_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='操作日志表';
+
+-- 插入默认角色
+INSERT INTO t_role (role_id, role_name, role_code, description, is_system) VALUES
+('role_001', '系统管理员', 'ADMIN', '系统管理员，拥有所有权限', 1),
+('role_002', '园长', 'PRINCIPAL', '幼儿园园长，管理全园', 1),
+('role_003', '老师', 'TEACHER', '幼儿园老师', 1),
+('role_004', '家长', 'PARENT', '学生家长', 1);
+
+-- 插入默认权限
+INSERT INTO t_permission (permission_id, permission_name, permission_code, permission_type, path, sort) VALUES
+('perm_001', '用户管理', 'user:manage', 'MENU', '/user', 1),
+('perm_002', '用户查询', 'user:list', 'BUTTON', NULL, 0),
+('perm_003', '用户新增', 'user:add', 'BUTTON', NULL, 0),
+('perm_004', '用户编辑', 'user:edit', 'BUTTON', NULL, 0),
+('perm_005', '用户删除', 'user:delete', 'BUTTON', NULL, 0),
+('perm_006', '学生管理', 'student:manage', 'MENU', '/student', 2),
+('perm_007', '学生查询', 'student:list', 'BUTTON', NULL, 0),
+('perm_008', '学生新增', 'student:add', 'BUTTON', NULL, 0),
+('perm_009', '学生编辑', 'student:edit', 'BUTTON', NULL, 0),
+('perm_010', '班级管理', 'class:manage', 'MENU', '/class', 3),
+('perm_011', '食谱管理', 'menu:manage', 'MENU', '/menu', 4),
+('perm_012', '课程管理', 'course:manage', 'MENU', '/course', 5),
+('perm_013', '成长记录', 'record:manage', 'MENU', '/record', 6),
+('perm_014', '考勤管理', 'attendance:manage', 'MENU', '/attendance', 7),
+('perm_015', '数据看板', 'dashboard:view', 'MENU', '/dashboard', 8),
+('perm_016', '通知管理', 'notice:manage', 'MENU', '/notice', 9),
+('perm_017', '活动管理', 'activity:manage', 'MENU', '/activity', 10),
+('perm_018', '系统设置', 'system:manage', 'MENU', '/system', 11);
+
 
