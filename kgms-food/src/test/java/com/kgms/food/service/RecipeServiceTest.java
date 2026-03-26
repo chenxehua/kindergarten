@@ -2,8 +2,9 @@ package com.kgms.food.service;
 
 import com.kgms.food.dto.RecipeDTO;
 import com.kgms.food.dto.RecipeVO;
-import com.kgms.food.entity.Recipe;
-import com.kgms.food.mapper.RecipeMapper;
+import com.kgms.food.entity.FoodRecipe;
+import com.kgms.food.mapper.FoodRecipeMapper;
+import com.kgms.common.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,77 +24,93 @@ import static org.mockito.Mockito.*;
 class RecipeServiceTest {
 
     @Mock
-    private RecipeMapper recipeMapper;
+    private FoodRecipeMapper recipeMapper;
 
     @InjectMocks
     private RecipeService recipeService;
 
-    private Recipe testRecipe;
+    private FoodRecipe testRecipe;
 
     @BeforeEach
     void setUp() {
-        testRecipe = new Recipe();
+        testRecipe = new FoodRecipe();
         testRecipe.setId(1L);
         testRecipe.setRecipeId("recipe_001");
-        testRecipe.setRecipeDate(LocalDate.now());
-        testRecipe.setMealType(1);
-        testRecipe.setFoodName("牛奶面包");
-        testRecipe.setCalorie(300);
+        testRecipe.setKgId("kg_001");
+        testRecipe.setWeekStart(LocalDate.of(2026, 3, 23));
         testRecipe.setPublishStatus(1);
     }
 
     /**
-     * TC-FOOD-001: 发布食谱
+     * TC-FOOD-001: 新增食谱 - 成功
      */
     @Test
-    void testPublishRecipe_Success() {
+    void testAddRecipe_Success() {
         // Given
         RecipeDTO dto = new RecipeDTO();
-        dto.setRecipeDate(LocalDate.now());
-        dto.setMealType(1);
-        dto.setFoodName("豆浆油条");
+        dto.setKgId("kg_001");
+        dto.setWeekStart(LocalDate.of(2026, 3, 23));
         
-        when(recipeMapper.insert(any(Recipe.class))).thenReturn(1);
+        when(recipeMapper.selectOne(any())).thenReturn(null);
+        when(recipeMapper.insert(any(FoodRecipe.class))).thenReturn(1);
 
         // When
-        String recipeId = recipeService.publishRecipe(dto);
+        String recipeId = recipeService.addRecipe(dto);
 
         // Then
         assertNotNull(recipeId);
-        verify(recipeMapper, times(1)).insert(any(Recipe.class));
+        verify(recipeMapper, times(1)).insert(any(FoodRecipe.class));
     }
 
     /**
-     * TC-FOOD-002: 获取食谱列表
+     * TC-FOOD-002: 新增食谱 - 本周已存在
+     */
+    @Test
+    void testAddRecipe_AlreadyExists() {
+        // Given
+        RecipeDTO dto = new RecipeDTO();
+        dto.setKgId("kg_001");
+        dto.setWeekStart(LocalDate.of(2026, 3, 23));
+        
+        when(recipeMapper.selectOne(any())).thenReturn(testRecipe);
+
+        // When & Then
+        BusinessException exception = assertThrows(
+            BusinessException.class,
+            () -> recipeService.addRecipe(dto)
+        );
+        assertEquals(400, exception.getCode());
+    }
+
+    /**
+     * TC-FOOD-003: 获取食谱详情
+     */
+    @Test
+    void testGetRecipeDetail() {
+        // Given
+        when(recipeMapper.selectOne(any())).thenReturn(testRecipe);
+
+        // When
+        RecipeVO vo = recipeService.getRecipeDetail("recipe_001");
+
+        // Then
+        assertNotNull(vo);
+        assertEquals("recipe_001", vo.getRecipeId());
+    }
+
+    /**
+     * TC-FOOD-004: 获取食谱列表
      */
     @Test
     void testGetRecipeList() {
         // Given
-        List<Recipe> recipes = Arrays.asList(testRecipe);
-        when(recipeMapper.selectList(any())).thenReturn(recipes);
+        when(recipeMapper.selectList(any())).thenReturn(Arrays.asList(testRecipe));
 
         // When
-        List<RecipeVO> result = recipeService.getRecipeList(LocalDate.now(), LocalDate.now().plusDays(7));
+        List<RecipeVO> list = recipeService.getRecipeList("kg_001", 2026, 3);
 
         // Then
-        assertNotNull(result);
-        assertTrue(result.size() >= 1);
-    }
-
-    /**
-     * TC-FOOD-003: 获取今日食谱
-     */
-    @Test
-    void testGetTodayRecipes() {
-        // Given
-        List<Recipe> recipes = Arrays.asList(testRecipe);
-        when(recipeMapper.selectList(any())).thenReturn(recipes);
-
-        // When
-        List<RecipeVO> result = recipeService.getTodayRecipes();
-
-        // Then
-        assertNotNull(result);
-        assertEquals(LocalDate.now(), result.get(0).getRecipeDate());
+        assertNotNull(list);
+        assertEquals(1, list.size());
     }
 }

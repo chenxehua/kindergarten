@@ -1,0 +1,27 @@
+{
+  "name": "kindergarten",
+  "version": "1.0.0",
+  "description": "<p align=\"center\">   <img src=\"https://img.shields.io/badge/Spring%20Cloud-2023.0-brightgreen\" alt=\"Spring Cloud\">   <img src=\"https://img.shields.io/badge/Vue-3-brightgreen\" alt=\"Vue 3\">   <img src=\"https://img.shields.io/badge/UniApp-2-brightgreen\" alt=\"UniApp\">   <img src=\"https://img.shields.io/badge/License-MIT-blue\" alt=\"License\"> </p>",
+  "main": "playwright.config.js",
+  "directories": {
+    "doc": "doc"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chenxehua/kindergarten.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/chenxehua/kindergarten/issues"
+  },
+  "homepage": "https://github.com/chenxehua/kindergarten#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.58.2"
+  }
+}

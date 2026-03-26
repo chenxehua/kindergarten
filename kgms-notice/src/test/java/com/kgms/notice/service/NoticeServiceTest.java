@@ -4,6 +4,7 @@ import com.kgms.notice.dto.NoticeDTO;
 import com.kgms.notice.dto.NoticeVO;
 import com.kgms.notice.entity.Notice;
 import com.kgms.notice.mapper.NoticeMapper;
+import com.kgms.common.exception.BusinessException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +18,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -35,24 +37,26 @@ class NoticeServiceTest {
         testNotice = new Notice();
         testNotice.setId(1L);
         testNotice.setNoticeId("notice_001");
-        testNotice.setTitle("开学通知");
-        testNotice.setContent("请各位家长注意开学时间");
-        testNotice.setNoticeType(1);
-        testNotice.setPublisherId("teacher_001");
+        testNotice.setKgId("kg_001");
+        testNotice.setTitle("春季运动会通知");
+        testNotice.setContent("本周五举行春季运动会");
+        testNotice.setNoticeType("1");
+        testNotice.setPublishBy("teacher_001");
         testNotice.setPublishTime(LocalDateTime.now());
-        testNotice.setPublishStatus(1);
+        testNotice.setStatus(1);
     }
 
     /**
-     * TC-NOTICE-001: 发布通知
+     * TC-NOTICE-001: 发布通知 - 成功
      */
     @Test
     void testPublishNotice_Success() {
         // Given
         NoticeDTO dto = new NoticeDTO();
-        dto.setTitle("放假通知");
-        dto.setContent("明天放假");
-        dto.setNoticeType(1);
+        dto.setKgId("kg_001");
+        dto.setTitle("测试通知");
+        dto.setContent("测试内容");
+        dto.setNoticeType("1");
         
         when(noticeMapper.insert(any(Notice.class))).thenReturn(1);
 
@@ -70,16 +74,15 @@ class NoticeServiceTest {
     @Test
     void testGetNoticeList() {
         // Given
-        List<Notice> notices = Arrays.asList(testNotice);
-        when(noticeMapper.selectList(any())).thenReturn(notices);
+        when(noticeMapper.selectList(any())).thenReturn(Arrays.asList(testNotice));
 
         // When
-        List<NoticeVO> result = noticeService.getNoticeList();
+        List<NoticeVO> list = noticeService.getNoticeList("kg_001", null);
 
         // Then
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("开学通知", result.get(0).getTitle());
+        assertNotNull(list);
+        assertEquals(1, list.size());
+        assertEquals("春季运动会通知", list.get(0).getTitle());
     }
 
     /**
@@ -96,38 +99,33 @@ class NoticeServiceTest {
         // Then
         assertNotNull(vo);
         assertEquals("notice_001", vo.getNoticeId());
-        assertEquals("开学通知", vo.getTitle());
+    }
+
+    /**
+     * TC-NOTICE-003: 获取通知详情 - 不存在
+     */
+    @Test
+    void testGetNoticeDetail_NotFound() {
+        // Given
+        when(noticeMapper.selectOne(any())).thenReturn(null);
+
+        // When & Then
+        assertThrows(BusinessException.class, () -> noticeService.getNoticeDetail("not_exist"));
     }
 
     /**
      * TC-NOTICE-004: 撤回通知
      */
     @Test
-    void testRevokeNotice_Success() {
+    void testWithdrawNotice_Success() {
         // Given
         when(noticeMapper.selectOne(any())).thenReturn(testNotice);
         when(noticeMapper.updateById(any())).thenReturn(1);
 
         // When
-        noticeService.revokeNotice("notice_001");
+        noticeService.withdrawNotice("notice_001");
 
         // Then
-        verify(noticeMapper, times(1)).updateById(any());
-    }
-
-    /**
-     * TC-NOTICE-005: 删除通知
-     */
-    @Test
-    void testDeleteNotice_Success() {
-        // Given
-        when(noticeMapper.selectOne(any())).thenReturn(testNotice);
-        when(noticeMapper.deleteById(any())).thenReturn(1);
-
-        // When
-        noticeService.deleteNotice("notice_001");
-
-        // Then
-        verify(noticeMapper, times(1)).deleteById(any());
+        verify(noticeMapper, times(1)).updateById(any(Notice.class));
     }
 }

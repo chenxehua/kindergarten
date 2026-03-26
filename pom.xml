@@ -38,7 +38,7 @@
         <jwt.version>0.12.3</jwt.version>
         <fastjson.version>2.0.43</fastjson.version>
         <hutool.version>5.8.23</hutool.version>
-        <lombok.version>1.18.36</lombok.version>
+        <lombok.version>1.18.30</lombok.version>
         <poi.version>5.2.5</poi.version>
     </properties>
 

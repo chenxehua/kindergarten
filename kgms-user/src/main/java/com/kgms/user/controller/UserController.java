@@ -7,6 +7,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * 用户Controller
  */
@@ -65,5 +67,25 @@ public class UserController {
     public Result<Void> logout() {
         // TODO: 处理登出逻辑（如移除Redis中的Token）
         return Result.success();
+    }
+
+    /**
+     * 家长获取孩子列表
+     */
+    @GetMapping("/child/list")
+    public Result<List<ChildVO>> getChildList(@RequestHeader("X-User-Id") String userId) {
+        List<ChildVO> children = userService.getChildList(userId);
+        return Result.success(children);
+    }
+
+    /**
+     * 家长查看孩子详情
+     */
+    @GetMapping("/child/detail")
+    public Result<ChildDetailVO> getChildDetail(
+            @RequestParam String studentId,
+            @RequestHeader("X-User-Id") String userId) {
+        ChildDetailVO detail = userService.getChildDetail(studentId, userId);
+        return Result.success(detail);
     }
 }

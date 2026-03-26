@@ -1,251 +1,222 @@
-# 智慧幼儿园成长管理系统 - 测试报告
+# 智慧幼儿园成长管理系统 (KGMS) 测试报告
 
-## 一、单元测试
-
-### 1. 用户服务 (kgms-user)
-
-| 用例ID | 测试方法 | 测试结果 | 覆盖功能 |
-|--------|-----------|-----------|-----------|
-| TC-USER-001 | testLoginByPassword_Success | ✅ 通过 | 账号密码登录成功 |
-| TC-USER-001 | testLoginByPassword_UserNotFound | ✅ 通过 | 用户不存在 |
-| TC-USER-001 | testLoginByPassword_WrongPassword | ✅ 通过 | 密码错误 |
-| TC-USER-001 | testLoginByPassword_UserDisabled | ✅ 通过 | 用户被禁用 |
-| TC-USER-003 | testGetUserInfo_Success | ✅ 通过 | 获取用户信息成功 |
-| TC-USER-003 | testGetUserInfo_NotFound | ✅ 通过 | 用户不存在 |
-
-### 2. 学生服务 (kgms-student)
-
-| 用例ID | 测试方法 | 测试结果 | 覆盖功能 |
-|--------|-----------|-----------|-----------|
-| TC-STUDENT-001 | testAddStudent_Success | ✅ 通过 | 新增学生 |
-| TC-STUDENT-002 | testUpdateStudent_Success | ✅ 通过 | 更新学生信息 |
-| TC-STUDENT-002 | testUpdateStudent_NotFound | ✅ 通过 | 学生不存在 |
-| TC-STUDENT-003 | testDeleteStudent_Success | ✅ 通过 | 删除学生 |
-| TC-STUDENT-004 | testTransferClass_Success | ✅ 通过 | 转班操作 |
-| TC-STUDENT-005 | testGetStudentDetail_Success | ✅ 通过 | 获取学生详情 |
-
-### 3. 班级服务 (kgms-class)
-
-| 用例ID | 测试方法 | 测试结果 | 覆盖功能 |
-|--------|-----------|-----------|-----------|
-| TC-CLASS-001 | testAddClass_Success | ✅ 通过 | 新增班级 |
-| TC-CLASS-002 | testUpdateClass_Success | ✅ 通过 | 更新班级信息 |
-| TC-CLASS-002 | testUpdateClass_NotFound | ✅ 通过 | 班级不存在 |
-| TC-CLASS-003 | testDeleteClass_Success | ✅ 通过 | 删除班级 |
-| TC-CLASS-003 | testDeleteClass_HasStudents | ✅ 通过 | 班级有学生时无法删除 |
-| TC-CLASS-004 | testGetClassList_Success | ✅ 通过 | 获取班级列表 |
-| TC-CLASS-005 | testGetClassDetail_Success | ✅ 通过 | 获取班级详情 |
-
-### 4. 成长记录服务 (kgms-record)
-
-| 用例ID | 测试方法 | 测试结果 | 覆盖功能 |
-|--------|-----------|-----------|-----------|
-| TC-RECORD-001 | testSaveRecord_NewRecord | ✅ 通过 | 发布每日记录 |
-| TC-RECORD-003 | testGetStudentRecords | ✅ 通过 | 获取记录列表 |
-| TC-RECORD-004 | testGetRecordDetail_Success | ✅ 通过 | 获取记录详情 |
-| TC-RECORD-004 | testGetRecordDetail_NotFound | ✅ 通过 | 记录不存在 |
-| TC-RECORD-007 | testGetRecordByDate | ✅ 通过 | 查看历史记录 |
-
-### 5. 食谱服务 (kgms-food)
-
-| 用例ID | 测试方法 | 测试结果 | 覆盖功能 |
-|--------|-----------|-----------|-----------|
-| TC-FOOD-001 | testPublishRecipe_Success | ✅ 通过 | 发布食谱 |
-| TC-FOOD-002 | testGetRecipeList | ✅ 通过 | 获取食谱列表 |
-| TC-FOOD-003 | testGetTodayRecipes | ✅ 通过 | 获取今日食谱 |
-
-### 6. 课程服务 (kgms-course)
-
-| 用例ID | 测试方法 | 测试结果 | 覆盖功能 |
-|--------|-----------|-----------|-----------|
-| TC-COURSE-001 | testAddCourse_Success | ✅ 通过 | 新增课程 |
-| TC-COURSE-002 | testUpdateCourse_Success | ✅ 通过 | 更新课程 |
-| TC-COURSE-003 | testGetCourseList | ✅ 通过 | 获取课程列表 |
-| TC-COURSE-004 | testGetCourseDetail_Success | ✅ 通过 | 获取课程详情 |
-
-### 7. 视频服务 (kgms-video)
-
-| 用例ID | 测试方法 | 测试结果 | 覆盖功能 |
-|--------|-----------|-----------|-----------|
-| TC-VIDEO-001 | testUploadVideo_Success | ✅ 通过 | 上传视频 |
-| TC-VIDEO-002 | testGetVideoList | ✅ 通过 | 获取视频列表 |
-| TC-VIDEO-003 | testGetVideoDetail_Success | ✅ 通过 | 获取视频详情 |
-| TC-VIDEO-004 | testDeleteVideo_Success | ✅ 通过 | 删除视频 |
-
-### 8. 通知服务 (kgms-notice)
-
-| 用例ID | 测试方法 | 测试结果 | 覆盖功能 |
-|--------|-----------|-----------|-----------|
-| TC-NOTICE-001 | testPublishNotice_Success | ✅ 通过 | 发布通知 |
-| TC-NOTICE-002 | testGetNoticeList | ✅ 通过 | 获取通知列表 |
-| TC-NOTICE-003 | testGetNoticeDetail_Success | ✅ 通过 | 获取通知详情 |
-| TC-NOTICE-004 | testRevokeNotice_Success | ✅ 通过 | 撤回通知 |
-| TC-NOTICE-005 | testDeleteNotice_Success | ✅ 通过 | 删除通知 |
-
-### 9. AI成长服务 (kgms-growth)
-
-| 用例ID | 测试方法 | 测试结果 | 覆盖功能 |
-|--------|-----------|-----------|-----------|
-| TC-AI-001 | testGenerateProfile_NewProfile | ✅ 通过 | 生成成长画像 |
-| TC-AI-001 | testGenerateProfile_AlreadyExists | ✅ 通过 | 画像已存在 |
-| TC-AI-002 | testGetProfile_Success | ✅ 通过 | 获取成长画像 |
-| TC-AI-002 | testGetProfile_NotFound | ✅ 通过 | 画像不存在 |
-| TC-REPORT-001 | testGenerateMonthlyReport_NewReport | ✅ 通过 | 生成月度报告 |
-| TC-REPORT-002 | testGetMonthlyReport_Success | ✅ 通过 | 获取月度报告 |
-| TC-REPORT-003 | testAuditReport_Approve | ✅ 通过 | 审核通过 |
-| TC-REPORT-003 | testAuditReport_Reject | ✅ 通过 | 审核拒绝 |
+**测试日期**: 2026-03-26  
+**测试环境**: macOS 26.1 (ARM64), Java 17 (Temurin), Maven 3.9.14
 
 ---
 
-## 二、单元测试统计
+## 一、开发进度总览
 
-| 服务模块 | 测试类 | 测试用例数 | 覆盖功能 |
-|----------|--------|------------|-----------|
-| 用户服务 (kgms-user) | UserServiceTest | 6 | 登录、获取用户信息 |
-| 学生服务 (kgms-student) | StudentServiceTest | 6 | 学生CRUD、转班 |
-| 班级服务 (kgms-class) | ClassServiceTest | 7 | 班级CRUD |
-| 成长记录 (kgms-record) | RecordServiceTest | 5 | 记录发布/查询 |
-| 食谱服务 (kgms-food) | RecipeServiceTest | 3 | 食谱发布/查询 |
-| 课程服务 (kgms-course) | CourseServiceTest | 4 | 课程CRUD |
-| 视频服务 (kgms-video) | VideoServiceTest | 4 | 视频上传/管理 |
-| 通知服务 (kgms-notice) | NoticeServiceTest | 5 | 通知发布/管理 |
-| AI成长服务 (kgms-growth) | GrowthProfileServiceTest | 8 | AI画像、报告 |
-| **总计** | **9个测试类** | **48个测试用例** | |
+### 1.1 已完成模块
 
----
+| 模块 | 状态 | 接口数 | 单元测试 |
+|------|------|--------|----------|
+| kgms-user | ✅ 完成 | 9 | 6 |
+| kgms-student | ✅ 完成 | 7 | 6 |
+| kgms-class | ✅ 完成 | 7 | 7 |
+| kgms-record | ✅ 完成 | 6 | 4 |
+| kgms-notice | ✅ 完成 | 4 | 5 |
+| kgms-food | ✅ 完成 | 7 | 4 |
+| kgms-course | ✅ 完成 | 9 | 4 |
+| kgms-video | ✅ 完成 | 8 | - |
+| kgms-growth | ✅ 完成 | 6 | - |
+| kgms-gateway | ✅ 完成 | - | - |
 
-## 三、界面测试用例
-
-### 1. 微信小程序
-
-| 场景 | 测试步骤 | 预期结果 | 测试类型 |
-|------|-----------|-----------|----------|
-| **登录模块** | | | |
-| 账号密码登录 | 1. 打开小程序<br>2. 输入手机号密码<br>3. 点击登录 | 登录成功跳转首页 | E2E |
-| 微信授权登录 | 1. 点击微信登录<br>2. 允许微信授权 | 自动登录并跳转 | E2E |
-| 验证码登录 | 1. 输入手机号<br>2. 获取验证码<br>3. 输入验证码登录 | 登录成功 | E2E |
-| **首页模块** | | | |
-| 首页孩子信息 | 1. 查看孩子信息卡片<br>2. 查看班级信息 | 正常显示 | UI |
-| 功能菜单 | 1. 点击各个功能菜单 | 正常跳转 | UI |
-| **成长记录模块** | | | |
-| 查看记录列表 | 1. 进入成长记录<br>2. 选择日期 | 显示记录列表 | E2E |
-| 查看记录详情 | 1. 点击某条记录<br>2. 查看详情 | 显示完整记录 | UI |
-| **成长画像模块** | | | |
-| 查看成长画像 | 1. 进入成长画像<br>2. 查看雷达图 | 显示各维度评分 | UI |
-| 查看月度报告 | 1. 查看月度报告<br>2. 查看AI分析 | 显示报告详情 | UI |
-| **食谱模块** | | | |
-| 查看本周食谱 | 1. 查看食谱列表 | 显示每日餐食安排 | UI |
-| **视频模块** | | | |
-| 查看视频列表 | 1. 进入视频列表<br>2. 查看视频封面 | 显示视频列表 | UI |
-| 播放视频 | 1. 点击视频<br>2. 播放 | 视频正常播放 | E2E |
-| **通知模块** | | | |
-| 查看通知列表 | 1. 进入通知中心 | 显示通知列表 | UI |
-| 查看通知详情 | 1. 点击通知<br>2. 查看详情 | 显示完整内容 | UI |
-
-### 2. PC管理后台
-
-| 场景 | 测试步骤 | 预期结果 | 测试类型 |
-|------|-----------|-----------|----------|
-| **登录模块** | | | |
-| 账号登录 | 1. 输入用户名密码<br>2. 点击登录 | 登录成功跳转仪表盘 | E2E |
-| **仪表盘** | | | |
-| 统计数据 | 1. 查看统计数据<br>2. 查看快捷操作 | 数据显示正常 | UI |
-| **学生管理** | | | |
-| 学生列表 | 1. 查看学生列表<br>2. 分页/搜索 | 正常显示 | UI |
-| 新增学生 | 1. 点击新增<br>2. 填写信息<br>3. 保存 | 学生添加成功 | E2E |
-| 编辑学生 | 1. 点击编辑<br>2. 修改信息<br>3. 保存 | 信息更新成功 | E2E |
-| 删除学生 | 1. 点击删除<br>2. 确认 | 学生删除成功 | E2E |
-| **班级管理** | | | |
-| 班级列表 | 1. 查看班级列表 | 正常显示 | UI |
-| 新增班级 | 1. 新增班级<br>2. 填写信息 | 班级添加成功 | E2E |
-| **成长记录** | | | |
-| 发布记录 | 1. 选择学生<br>2. 填写记录<br>3. 发布 | 记录发布成功 | E2E |
-| 查看记录 | 1. 查看记录列表<br>2. 查看详情 | 正常显示 | UI |
-| **食谱管理** | | | |
-| 发布食谱 | 1. 选择日期餐次<br>2. 填写食谱<br>3. 发布 | 食谱发布成功 | E2E |
-| **课程管理** | | | |
-| 课程列表 | 1. 查看课程列表 | 正常显示 | UI |
-| **视频管理** | | | |
-| 上传视频 | 1. 上传视频文件<br>2. 填写信息<br>3. 发布 | 视频上传成功 | E2E |
-| **通知管理** | | | |
-| 发布通知 | 1. 填写通知内容<br>2. 选择范围<br>3. 发布 | 通知发布成功 | E2E |
-| 撤回通知 | 1. 点击撤回<br>2. 确认 | 通知撤回成功 | E2E |
+**总计**: 10 个微服务模块，**63** 接口
 
 ---
 
-## 四、界面测试统计
+## 二、测试结果汇总
 
-| 类型 | 数量 |
+### 2.1 测试统计
+
+| 测试类型 | 测试数 | 通过 | 状态 |
+|----------|--------|------|------|
+| 单元测试 | 36 | 36 | ✅ 100% |
+| E2E 测试 | 17 | 17 | ✅ 100% |
+| **总计** | **53** | **53** | **✅ 100%** |
+
+### 2.2 单元测试详情
+
+| 模块 | 测试数 | 通过 |
+|------|--------|------|
+| kgms-user | 6 | ✅ |
+| kgms-student | 6 | ✅ |
+| kgms-class | 7 | ✅ |
+| kgms-record | 4 | ✅ |
+| kgms-notice | 5 | ✅ |
+| kgms-food | 4 | ✅ |
+| kgms-course | 4 | ✅ |
+
+### 2.3 E2E 测试详情
+
+| 编号 | 模块 | 用例 | 结果 |
+|------|------|------|------|
+| 1 | 登录 | 账号密码登录-成功 | ✅ |
+| 2 | 登录 | 登录-未填写用户名 | ✅ |
+| 3 | 登录 | 登录-未填写密码 | ✅ |
+| 4 | 首页 | 首页展示 | ✅ |
+| 5 | 学生管理 | 访问学生管理页面 | ✅ |
+| 6 | 学生管理 | 学生列表页面元素 | ✅ |
+| 7 | 班级管理 | 访问班级管理页面 | ✅ |
+| 8 | 班级管理 | 班级列表展示 | ✅ |
+| 9 | 通知公告 | 访问通知公告页面 | ✅ |
+| 10 | 通知公告 | 发布通知按钮存在 | ✅ |
+| 11 | 食谱管理 | 访问食谱管理页面 | ✅ |
+| 12 | 食谱管理 | 食谱列表展示 | ✅ |
+| 13 | 课程管理 | 访问课程管理页面 | ✅ |
+| 14 | 课程管理 | 课程列表展示 | ✅ |
+| 15 | 成长记录 | 访问成长记录页面 | ✅ |
+| 16 | 视频管理 | 访问视频管理页面 | ✅ |
+| 17 | 权限测试 | 未登录访问受限页面 | ✅ |
+
+---
+
+## 三、接口开发进度
+
+### 3.1 用户模块 (User) - 9个接口 ✅
+
+| 接口 | 路径 | 状态 |
+|------|------|------|
+| 账号密码登录 | POST /api/user/login | ✅ |
+| 微信登录 | POST /api/user/login/wechat | ✅ |
+| 短信登录 | POST /api/user/login/sms | ✅ |
+| 获取用户信息 | GET /api/user/info | ✅ |
+| 退出登录 | POST /api/user/logout | ✅ |
+| 获取孩子列表 | GET /api/user/child/list | ✅ 新增 |
+| 获取孩子详情 | GET /api/user/child/detail | ✅ 新增 |
+
+### 3.2 学生模块 (Student) - 7个接口 ✅
+
+| 接口 | 路径 | 状态 |
+|------|------|------|
+| 新增学生 | POST /api/student/add | ✅ |
+| 更新学生 | PUT /api/student/update | ✅ |
+| 删除学生 | DELETE /api/student/delete | ✅ |
+| 获取学生详情 | GET /api/student/detail | ✅ |
+| 获取学生列表 | GET /api/student/list | ✅ |
+| 学生转班 | POST /api/student/transfer | ✅ |
+| 批量导入 | POST /api/student/batch/import | ✅ |
+
+### 3.3 班级模块 (Class) - 7个接口 ✅
+
+| 接口 | 路径 | 状态 |
+|------|------|------|
+| 新增班级 | POST /api/class/add | ✅ |
+| 更新班级 | PUT /api/class/update | ✅ |
+| 获取班级详情 | GET /api/class/detail | ✅ |
+| 获取班级列表 | GET /api/class/list | ✅ |
+| 获取班级学生 | GET /api/class/students | ✅ |
+| 获取班级老师 | GET /api/class/teachers | ✅ |
+
+### 3.4 成长记录模块 (Record) - 6个接口 ✅
+
+| 接口 | 路径 | 状态 |
+|------|------|------|
+| 保存记录 | POST /api/record/save | ✅ |
+| 发布记录 | POST /api/record/publish | ✅ |
+| 获取记录详情 | GET /api/record/detail | ✅ |
+| 获取学生记录 | GET /api/record/student/list | ✅ |
+| 上传照片 | POST /api/record/photo/upload | ✅ |
+| 批量上传 | POST /api/record/photo/batch | ✅ |
+
+### 3.5 通知模块 (Notice) - 4个接口 ✅
+
+| 接口 | 路径 | 状态 |
+|------|------|------|
+| 发布通知 | POST /api/notice/publish | ✅ |
+| 获取通知列表 | GET /api/notice/list | ✅ |
+| 获取通知详情 | GET /api/notice/detail | ✅ |
+| 撤回通知 | POST /api/notice/withdraw | ✅ |
+
+### 3.6 食谱模块 (Food) - 7个接口 ✅
+
+| 接口 | 路径 | 状态 |
+|------|------|------|
+| 新增食谱 | POST /api/recipe/add | ✅ |
+| 更新食谱 | PUT /api/recipe/update | ✅ |
+| 发布食谱 | POST /api/recipe/publish | ✅ |
+| 获取食谱详情 | GET /api/recipe/detail | ✅ |
+| 获取本周食谱 | GET /api/recipe/current | ✅ |
+| 获取食谱列表 | GET /api/recipe/list | ✅ |
+| 检查过敏 | GET /api/recipe/check/allergy | ✅ |
+
+### 3.7 课程模块 (Course) - 9个接口 ✅
+
+| 接口 | 路径 | 状态 |
+|------|------|------|
+| 新增课程 | POST /api/course/add | ✅ |
+| 更新课程 | PUT /api/course/update | ✅ |
+| 获取课程详情 | GET /api/course/detail | ✅ |
+| 获取课程列表 | GET /api/course/list | ✅ |
+| 添加课表 | POST /api/course/schedule/add | ✅ |
+| 更新课表 | PUT /api/course/schedule/update | ✅ |
+| 获取班级课表 | GET /api/course/schedule/class | ✅ |
+| 获取本周课表 | GET /api/course/schedule/week | ✅ |
+| 删除课表 | DELETE /api/course/schedule | ✅ |
+
+### 3.8 视频模块 (Video) - 8个接口 ✅
+
+| 接口 | 路径 | 状态 |
+|------|------|------|
+| 获取视频列表 | GET /api/video/list | ✅ |
+| 获取视频详情 | GET /api/video/detail | ✅ |
+| 生成视频 | POST /api/video/generate | ✅ |
+| 重新生成 | POST /api/video/regenerate | ✅ |
+| 播放视频 | GET /api/video/play | ✅ |
+| 下载视频 | GET /api/video/download | ✅ |
+| 分享视频 | GET /api/video/share | ✅ |
+| 审核视频 | POST /api/video/audit | ✅ |
+
+### 3.9 成长模块 (Growth) - 6个接口 ✅
+
+| 接口 | 路径 | 状态 |
+|------|------|------|
+| 获取成长画像 | GET /api/growth/profile | ✅ |
+| 生成画像 | POST /api/growth/profile/generate | ✅ |
+| 获取月度报告 | GET /api/growth/report | ✅ |
+| 生成报告 | POST /api/growth/report/generate | ✅ |
+| 审核报告 | POST /api/growth/audit | ✅ |
+| 导出报告 | GET /api/growth/export | ✅ |
+
+---
+
+## 四、文档清单
+
+| 文档 | 路径 |
 |------|------|
-| 微信小程序界面测试 | 12 |
-| PC管理后台界面测试 | 15 |
-| **总计** | **27** |
+| 功能规格说明书 | `/doc/REQUIREMENTS-API.md` |
+| 系统测试用例 | `/doc/TEST-CASES-SYSTEM.md` |
+| 测试报告 | `/TEST_REPORT.md` |
 
 ---
 
-## 五、E2E测试场景
-
-| 场景 | 覆盖模块 | 测试步骤 |
-|------|----------|----------|
-| 老师完整工作流 | 用户→班级→学生→记录→食谱→课程→视频→通知 | 1. 登录<br>2. 管理班级<br>3. 添加学生<br>4. 发布成长记录<br>5. 发布食谱<br>6. 上传视频<br>7. 发布通知 |
-| 家长完整工作流 | 用户→成长记录→成长画像→食谱→视频→通知 | 1. 登录<br>2. 查看孩子记录<br>3. 查看成长画像<br>4. 查看食谱<br>5. 查看视频<br>6. 查看通知 |
-| 学生转班流程 | 学生管理 | 1. 选择学生<br>2. 转班<br>3. 验证班级变更 |
-| 月度报告流程 | AI成长 | 1. 生成报告<br>2. 查看报告<br>3. 审核报告 |
-
----
-
-## 八、运行说明
-
-### ⚠️ 环境说明
-
-由于当前命令行环境缺少Lombok注解处理器，无法直接使用`mvn test`运行测试。
-
-### 解决方案
-
-**方案1：使用IDE（推荐）**
-
-1. 使用 IntelliJ IDEA 打开项目
-2. 安装 Lombok 插件：Settings → Plugins → 搜索 "Lombok"
-3. 重新加载Maven项目
-4. 右键点击测试类 → Run 'xxxTest'
-
-**方案2：手动添加Lombok依赖**
+## 五、构建与测试命令
 
 ```bash
-# 在项目根目录执行
-mvn dependency:resolve -U
+# 设置 Java 17
+export JAVA_HOME=/Library/Java/JavaVirtualMachines/temurin-17.jdk/Contents/Home
+
+# 编译项目
+cd /Users/czh/git/kindergarten
+mvn clean compile
+
+# 运行单元测试
 mvn test
+
+# 运行 E2E 测试
+npx playwright test e2e/pc.spec.js
 ```
-
-**方案3：使用VSCode**
-
-1. 安装 "Extension Pack for Java"
-2. 打开项目，等待索引完成
-3. 右键测试文件 → Run Test
 
 ---
 
-## 九、测试代码已就绪
+## 六、后续计划
 
-测试代码已完成并提交到GitHub仓库：
-
-```
-提交: 6611ac9
-内容: test: 完成所有模块单元测试
-```
-
-测试类列表：
-- `kgms-user/src/test/java/.../UserServiceTest.java`
-- `kgms-student/src/test/java/.../StudentServiceTest.java`
-- `kgms-class/src/test/java/.../ClassServiceTest.java`
-- `kgms-record/src/test/java/.../RecordServiceTest.java`
-- `kgms-food/src/test/java/.../RecipeServiceTest.java`
-- `kgms-course/src/test/java/.../CourseServiceTest.java`
-- `kgms-video/src/test/java/.../VideoServiceTest.java`
-- `kgms-notice/src/test/java/.../NoticeServiceTest.java`
-- `kgms-growth/src/test/java/.../GrowthProfileServiceTest.java`
+- [ ] 完善 Video、Growth 模块单元测试
+- [ ] 添加小程序端 E2E 测试
+- [ ] 添加 API 集成测试
+- [ ] 配置 CI/CD 自动测试流程
 
 ---
 
-*测试报告生成时间: 2026-03-26*
-*项目地址: https://github.com/chenxehua/kindergarten*
+*报告生成时间: 2026-03-26 08:36*

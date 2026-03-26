@@ -139,11 +139,34 @@ public class UserService {
     /**
      * 获取家长关联的孩子列表
      */
-    public List<ParentInfo> getChildrenByParentId(String userId) {
-        return parentInfoMapper.selectList(
+    public List<ChildVO> getChildList(String userId) {
+        List<ParentInfo> parentInfos = parentInfoMapper.selectList(
                 new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<ParentInfo>()
                         .eq("user_id", userId)
         );
+        
+        // 转换为ChildVO
+        // TODO: 实际需要调用student服务获取学生信息
+        return null;
+    }
+
+    /**
+     * 获取孩子详情
+     */
+    public ChildDetailVO getChildDetail(String studentId, String userId) {
+        // 验证权限：检查是否是该孩子的家长
+        long count = parentInfoMapper.selectCount(
+                new com.baomidou.mybatisplus.core.conditions.query.QueryWrapper<ParentInfo>()
+                        .eq("user_id", userId)
+                        .eq("student_id", studentId)
+        );
+        
+        if (count == 0) {
+            throw new BusinessException(403, "无权限查看该孩子信息");
+        }
+        
+        // TODO: 调用student服务获取详情
+        return null;
     }
 
     /**

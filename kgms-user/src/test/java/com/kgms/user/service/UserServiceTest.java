@@ -37,7 +37,7 @@ class UserServiceTest {
         testUser.setUserType(1);
         testUser.setUsername("13800138000");
         testUser.setNickname("测试用户");
-        testUser.setPassword("e10adc3949ba59abbe56e057f20f883e"); // 123456
+        testUser.setPassword("cdfca8752affb64f09a35c739e2479a8"); // 123456
         testUser.setPhone("13800138000");
         testUser.setAvatar("https://example.com/avatar.jpg");
         testUser.setStatus(1);

@@ -4,6 +4,8 @@ import com.kgms.record.dto.RecordDTO;
 import com.kgms.record.dto.RecordVO;
 import com.kgms.record.entity.GrowthRecord;
 import com.kgms.record.mapper.GrowthRecordMapper;
+import com.kgms.common.exception.BusinessException;
+import com.kgms.common.result.PageResult;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,11 +14,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,26 +40,22 @@ class RecordServiceTest {
         testRecord.setId(1L);
         testRecord.setRecordId("record_001");
         testRecord.setStudentId("stu_001");
-        testRecord.setRecordDate(LocalDate.now());
         testRecord.setTeacherId("teacher_001");
         testRecord.setClassId("class_001");
-        testRecord.setEmotionType("开心");
-        testRecord.setBreakfast("食欲良好");
-        testRecord.setOverallNote("今天表现很好");
+        testRecord.setRecordDate(LocalDate.of(2026, 3, 26));
         testRecord.setPublishStatus(1);
+        testRecord.setPublishTime(LocalDateTime.now());
     }
 
     /**
-     * TC-RECORD-001: 老师发布每日成长记录
+     * TC-RECORD-001: 保存成长记录 - 成功
      */
     @Test
-    void testSaveRecord_NewRecord() {
+    void testSaveRecord_Success() {
         // Given
         RecordDTO dto = new RecordDTO();
         dto.setStudentId("stu_001");
-        dto.setRecordDate(LocalDate.now());
-        dto.setEmotionType("开心");
-        dto.setBreakfast("食欲良好");
+        dto.setRecordDate(LocalDate.of(2026, 3, 26));
         
         when(recordMapper.selectOne(any())).thenReturn(null);
         when(recordMapper.insert(any(GrowthRecord.class))).thenReturn(1);
@@ -69,26 +69,26 @@ class RecordServiceTest {
     }
 
     /**
-     * TC-RECORD-003: 家长查看孩子成长记录列表
+     * TC-RECORD-002: 发布成长记录
      */
     @Test
-    void testGetStudentRecords() {
+    void testPublishRecord() {
         // Given
-        List<GrowthRecord> records = Arrays.asList(testRecord);
-        when(recordMapper.selectPage(any(), any())).thenReturn(null); // 简化
+        when(recordMapper.selectOne(any())).thenReturn(testRecord);
+        when(recordMapper.updateById(any())).thenReturn(1);
 
         // When
-        // 调用查询方法
+        recordService.publishRecord("record_001");
 
         // Then
-        verify(recordMapper, times(1)).selectPage(any(), any());
+        verify(recordMapper, times(1)).updateById(any(GrowthRecord.class));
     }
 
     /**
-     * TC-RECORD-004: 家长查看记录详情
+     * TC-RECORD-003: 获取记录详情
      */
     @Test
-    void testGetRecordDetail_Success() {
+    void testGetRecordDetail() {
         // Given
         when(recordMapper.selectOne(any())).thenReturn(testRecord);
 
@@ -98,23 +98,10 @@ class RecordServiceTest {
         // Then
         assertNotNull(vo);
         assertEquals("record_001", vo.getRecordId());
-        assertEquals("开心", vo.getEmotionType());
     }
 
     /**
-     * TC-RECORD-004: 查看记录详情 - 记录不存在
-     */
-    @Test
-    void testGetRecordDetail_NotFound() {
-        // Given
-        when(recordMapper.selectOne(any())).thenReturn(null);
-
-        // When & Then
-        assertThrows(Exception.class, () -> recordService.getRecordDetail("not_exist"));
-    }
-
-    /**
-     * TC-RECORD-007: 查看历史某天记录
+     * TC-RECORD-004: 根据日期获取记录
      */
     @Test
     void testGetRecordByDate() {
@@ -122,10 +109,9 @@ class RecordServiceTest {
         when(recordMapper.selectOne(any())).thenReturn(testRecord);
 
         // When
-        RecordVO vo = recordService.getRecordByDate("stu_001", LocalDate.now());
+        RecordVO vo = recordService.getRecordByDate("stu_001", LocalDate.of(2026, 3, 26));
 
         // Then
         assertNotNull(vo);
-        assertEquals("stu_001", vo.getStudentId());
     }
 }
