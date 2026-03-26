@@ -467,3 +467,286 @@ INSERT INTO t_growth_record (record_id, student_id, record_date, teacher_id, cla
 ('record_001', 'stu_001', '2026-03-25', 'user_teacher_001', 'class_001', '开心', '食欲良好', '食欲良好', '今天表现很好，积极参与活动。', 1, NOW());
 
 SELECT '数据库初始化完成！' AS result;
+
+-- =============================================
+-- 考勤管理模块
+-- =============================================
+
+-- 考勤记录表
+CREATE TABLE IF NOT EXISTS t_attendance (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    attendance_id       VARCHAR(32) NOT NULL UNIQUE COMMENT '考勤ID',
+    student_id          VARCHAR(32) NOT NULL COMMENT '学生ID',
+    class_id            VARCHAR(32) NOT NULL COMMENT '班级ID',
+    kg_id               VARCHAR(32) NOT NULL COMMENT '园区ID',
+    attendance_date     DATE NOT NULL COMMENT '考勤日期',
+
+    -- 签到签退
+    check_in_time       TIME COMMENT '签到时间',
+    check_in_photo      VARCHAR(500) COMMENT '签到照片',
+    check_out_time      TIME COMMENT '签退时间',
+    check_out_photo     VARCHAR(500) COMMENT '签退照片',
+
+    -- 考勤状态
+    status              VARCHAR(20) NOT NULL DEFAULT 'NORMAL' COMMENT '状态: NORMAL-正常 LATE-迟到 ABSENT-缺勤 LEAVE-请假',
+    leave_type          VARCHAR(20) COMMENT '请假类型: SICK-病假 PERSONAL-事假',
+    leave_reason        TEXT COMMENT '请假原因',
+
+    -- 接送信息
+    pickup_person       VARCHAR(50) COMMENT '接园人',
+    pickup_relation     VARCHAR(20) COMMENT '与学生关系',
+
+    -- 审批信息
+    apply_by            VARCHAR(32) COMMENT '申请人',
+    approve_by          VARCHAR(32) COMMENT '审批人',
+    approve_time        DATETIME COMMENT '审批时间',
+    approve_status      VARCHAR(20) DEFAULT 'APPROVED' COMMENT '审批状态: PENDING-待审批 APPROVED-已批准 REJECTED-已拒绝',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_student_date (student_id, attendance_date),
+    INDEX idx_class_date (class_id, attendance_date),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='考勤记录表';
+
+-- 老师考勤表
+CREATE TABLE IF NOT EXISTS t_teacher_attendance (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    record_id           VARCHAR(32) NOT NULL UNIQUE COMMENT '考勤记录ID',
+    teacher_id          VARCHAR(32) NOT NULL COMMENT '老师ID',
+    attendance_date     DATE NOT NULL COMMENT '考勤日期',
+
+    -- 签到签退
+    check_in_time       TIME COMMENT '签到时间',
+    check_in_location   VARCHAR(100) COMMENT '签到位置',
+    check_out_time      TIME COMMENT '签退时间',
+    check_out_location  VARCHAR(100) COMMENT '签退位置',
+
+    -- 考勤状态
+    status              VARCHAR(20) NOT NULL DEFAULT 'NORMAL' COMMENT '状态: NORMAL-正常 LATE-迟到 ABSENT-缺勤 LEAVE-请假',
+    leave_type          VARCHAR(20) COMMENT '请假类型',
+    leave_reason        TEXT COMMENT '请假原因',
+    leave_proof         VARCHAR(500) COMMENT '请假证明材料',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_teacher_date (teacher_id, attendance_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='老师考勤表';
+
+-- =============================================
+-- 数据看板模块
+-- =============================================
+
+-- 看板数据快照表（每日定时生成）
+CREATE TABLE IF NOT EXISTS t_dashboard_snapshot (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    snapshot_id         VARCHAR(32) NOT NULL UNIQUE COMMENT '快照ID',
+    kg_id               VARCHAR(32) NOT NULL COMMENT '园区ID',
+    snapshot_date       DATE NOT NULL COMMENT '快照日期',
+    snapshot_type       VARCHAR(20) NOT NULL COMMENT '快照类型: DAILY-每日 WEEKLY-每周 MONTHLY-每月',
+
+    -- 学生统计数据
+    total_students      INT DEFAULT 0 COMMENT '在园学生总数',
+    new_students        INT DEFAULT 0 COMMENT '本月新增学生',
+    left_students       INT DEFAULT 0 COMMENT '本月离园学生',
+
+    -- 考勤统计数据
+    attendance_rate     DECIMAL(5,2) DEFAULT 0 COMMENT '出勤率',
+    absent_count        INT DEFAULT 0 COMMENT '缺勤人数',
+    leave_count         INT DEFAULT 0 COMMENT '请假人数',
+    late_count          INT DEFAULT 0 COMMENT '迟到人数',
+
+    -- 成长记录统计数据
+    total_records       INT DEFAULT 0 COMMENT '成长记录总数',
+    published_records   INT DEFAULT 0 COMMENT '已发布记录数',
+    total_photos         INT DEFAULT 0 COMMENT '照片上传数',
+
+    -- 家长活跃度
+    active_parents      INT DEFAULT 0 COMMENT '活跃家长数',
+    message_count       INT DEFAULT 0 COMMENT '消息数',
+
+    -- 课程统计
+    total_courses       INT DEFAULT 0 COMMENT '课程总数',
+    completed_courses   INT DEFAULT 0 COMMENT '已完成课程数',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_kg_date (kg_id, snapshot_date, snapshot_type)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='看板数据快照表';
+
+-- =============================================
+-- 家校沟通模块
+-- =============================================
+
+-- 私信消息表
+CREATE TABLE IF NOT EXISTS t_message (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    message_id          VARCHAR(32) NOT NULL UNIQUE COMMENT '消息ID',
+    conversation_id     VARCHAR(32) NOT NULL COMMENT '会话ID',
+    sender_id           VARCHAR(32) NOT NULL COMMENT '发送者ID',
+    sender_type         VARCHAR(20) NOT NULL COMMENT '发送者类型: TEACHER/PARENT',
+    receiver_id         VARCHAR(32) NOT NULL COMMENT '接收者ID',
+    receiver_type       VARCHAR(20) NOT NULL COMMENT '接收者类型: TEACHER/PARENT',
+
+    -- 消息内容
+    message_type       VARCHAR(20) NOT NULL DEFAULT 'TEXT' COMMENT '消息类型: TEXT-文字 IMAGE-图片 VOICE-语音 LOCATION-位置',
+    content            TEXT COMMENT '消息内容',
+    media_url           VARCHAR(500) COMMENT '媒体文件URL',
+    media_duration      INT COMMENT '语音时长(秒)',
+
+    -- 消息状态
+    is_read             TINYINT DEFAULT 0 COMMENT '是否已读',
+    read_time           DATETIME COMMENT '阅读时间',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_conversation (conversation_id, create_time),
+    INDEX idx_receiver (receiver_id, is_read)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='私信消息表';
+
+-- 会话表
+CREATE TABLE IF NOT EXISTS t_conversation (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    conversation_id    VARCHAR(32) NOT NULL UNIQUE COMMENT '会话ID',
+    conversation_type  VARCHAR(20) NOT NULL COMMENT '会话类型: PRIVATE-私信 GROUP-群组',
+    name                VARCHAR(100) COMMENT '群名称',
+    avatar              VARCHAR(500) COMMENT '群头像',
+
+    -- 成员信息
+    member_ids          JSON COMMENT '成员ID列表',
+    member_count        INT DEFAULT 0 COMMENT '成员数量',
+
+    -- 群信息
+    owner_id            VARCHAR(32) COMMENT '群主ID',
+    notice              TEXT COMMENT '群公告',
+
+    -- 状态
+    last_message        TEXT COMMENT '最后一条消息',
+    last_message_time   DATETIME COMMENT '最后消息时间',
+    is_muted            TINYINT DEFAULT 0 COMMENT '是否禁言',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='会话表';
+
+-- =============================================
+-- 活动管理模块
+-- =============================================
+
+-- 活动表
+CREATE TABLE IF NOT EXISTS t_activity (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    activity_id         VARCHAR(32) NOT NULL UNIQUE COMMENT '活动ID',
+    kg_id               VARCHAR(32) NOT NULL COMMENT '园区ID',
+    activity_name       VARCHAR(100) NOT NULL COMMENT '活动名称',
+    activity_type       VARCHAR(20) NOT NULL COMMENT '活动类型: THEME-主题 FESTIVAL-节庆 SPORTS-体育 OUTDOOR-户外 PARENT-亲子 TEACHING-教学',
+
+    -- 活动信息
+    activity_time       DATETIME NOT NULL COMMENT '活动时间',
+    end_time            DATETIME COMMENT '活动结束时间',
+    location            VARCHAR(200) COMMENT '活动地点',
+    description         TEXT COMMENT '活动简介',
+    process             TEXT COMMENT '活动流程',
+
+    -- 参与对象
+    target_type         VARCHAR(20) NOT NULL COMMENT '目标类型: ALL-全园 CLASS-班级 STUDENT-指定学生',
+    target_ids          JSON COMMENT '目标ID列表',
+    max_participants    INT COMMENT '最大参与人数',
+
+    -- 费用
+    fee                 DECIMAL(10,2) DEFAULT 0 COMMENT '活动费用',
+    fee_description     VARCHAR(500) COMMENT '费用说明',
+
+    -- 报名信息
+    require_signup      TINYINT DEFAULT 0 COMMENT '是否需要报名',
+    signup_deadline     DATETIME COMMENT '报名截止时间',
+
+    -- 状态
+    status              VARCHAR(20) DEFAULT 'DRAFT' COMMENT '状态: DRAFT-草稿 PUBLISHED-已发布 CANCELLED-已取消 COMPLETED-已完成',
+    publish_time        DATETIME COMMENT '发布时间',
+
+    -- 负责人
+    principal_id        VARCHAR(32) COMMENT '负责人ID',
+    create_by           VARCHAR(32) COMMENT '创建人ID',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_kg_id (kg_id),
+    INDEX idx_activity_time (activity_time)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动表';
+
+-- 活动报名表
+CREATE TABLE IF NOT EXISTS t_activity_signup (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    signup_id           VARCHAR(32) NOT NULL UNIQUE COMMENT '报名ID',
+    activity_id         VARCHAR(32) NOT NULL COMMENT '活动ID',
+    student_id          VARCHAR(32) NOT NULL COMMENT '学生ID',
+    parent_id           VARCHAR(32) NOT NULL COMMENT '家长ID',
+
+    -- 报名信息
+    status              VARCHAR(20) DEFAULT 'PENDING' COMMENT '状态: PENDING-待审核 APPROVED-已通过 REJECTED-已拒绝 CANCELLED-已取消',
+    remark              VARCHAR(500) COMMENT '备注',
+
+    -- 审批信息
+    approve_by          VARCHAR(32) COMMENT '审批人',
+    approve_time        DATETIME COMMENT '审批时间',
+    approve_remark      VARCHAR(500) COMMENT '审批备注',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_activity_student (activity_id, student_id),
+    INDEX idx_activity (activity_id),
+    INDEX idx_student (student_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动报名表';
+
+-- 活动记录表
+CREATE TABLE IF NOT EXISTS t_activity_record (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    record_id           VARCHAR(32) NOT NULL UNIQUE COMMENT '记录ID',
+    activity_id         VARCHAR(32) NOT NULL COMMENT '活动ID',
+
+    -- 记录内容
+    summary             TEXT COMMENT '活动总结',
+    photos              JSON COMMENT '活动照片',
+    videos              JSON COMMENT '活动视频',
+
+    -- 参与学生
+    participant_ids     JSON COMMENT '参与学生ID列表',
+    absent_ids          JSON COMMENT '缺席学生ID列表',
+
+    -- 评价
+    parent_feedback     JSON COMMENT '家长反馈',
+
+    create_by           VARCHAR(32) COMMENT '记录人',
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动记录表';
+
+-- =============================================
+-- 系统设置模块
+-- =============================================
+
+-- 系统配置表
+CREATE TABLE IF NOT EXISTS t_system_config (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    config_id           VARCHAR(32) NOT NULL UNIQUE COMMENT '配置ID',
+    config_key          VARCHAR(50) NOT NULL UNIQUE COMMENT '配置键',
+    config_value        TEXT COMMENT '配置值',
+    config_type         VARCHAR(20) DEFAULT 'STRING' COMMENT '类型: STRING/NUMBER/BOOLEAN/JSON',
+    description         VARCHAR(200) COMMENT '描述',
+
+    -- 功能开关
+    is_enabled          TINYINT DEFAULT 1 COMMENT '是否启用',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_config_key (config_key)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='系统配置表';
+
+-- 插入默认系统配置
+INSERT INTO t_system_config (config_id, config_key, config_value, config_type, description, is_enabled) VALUES
+('config_ai_profile', 'feature.ai.profile.enabled', 'true', 'BOOLEAN', 'AI成长画像功能开关', 1),
+('config_ai_video', 'feature.ai.video.enabled', 'true', 'BOOLEAN', 'AI成长视频功能开关', 1),
+('config_attendance', 'feature.attendance.enabled', 'true', 'BOOLEAN', '考勤打卡功能开关', 1),
+('config_message', 'feature.message.enabled', 'true', 'BOOLEAN', '家校沟通功能开关', 1),
+('config_push_time', 'push.daily.time', '16:00', 'STRING', '每日推送时间', 1),
+('config_video_max_size', 'video.max.size', '500', 'NUMBER', '视频最大MB', 1);
+

@@ -98,4 +98,55 @@ public class GrowthController {
         // TODO: 对比AI分析与人工标注的准确率
         return Result.success(0.85); // 85%准确率
     }
+
+    /**
+     * 获取历史月份画像对比
+     */
+    @GetMapping("/profile/history")
+    public Result<List<ProfileVO>> getProfileHistory(
+            @RequestParam String studentId,
+            @RequestParam(defaultValue = "6") int months) {
+        return Result.success(growthProfileService.getProfileHistory(studentId, months));
+    }
+
+    /**
+     * 获取班级学生画像汇总（园长查看）
+     */
+    @GetMapping("/profile/class-summary")
+    public Result<Map<String, Object>> getClassProfileSummary(@RequestParam String classId) {
+        return Result.success(growthProfileService.getClassProfileSummary(classId));
+    }
+
+    /**
+     * 获取H5报告页面
+     */
+    @GetMapping("/report/h5/{reportId}")
+    public Result<Map<String, Object>> getReportH5(@PathVariable String reportId) {
+        // TODO: 返回H5页面渲染所需数据
+        ReportVO report = growthProfileService.getMonthlyReport(null, null);
+        // 通过reportId查询
+        return Result.success(java.util.Collections.emptyMap());
+    }
+
+    /**
+     * 家长提交报告反馈
+     */
+    @PostMapping("/report/feedback")
+    public Result<Void> submitReportFeedback(
+            @RequestParam String reportId,
+            @RequestParam String feedback) {
+        // TODO: 保存家长反馈
+        return Result.success();
+    }
+
+    /**
+     * 家长回复老师寄语
+     */
+    @PostMapping("/report/reply")
+    public Result<Void> replyToTeacher(
+            @RequestParam String reportId,
+            @RequestParam String reply) {
+        // TODO: 保存家长回复
+        return Result.success();
+    }
 }

@@ -195,13 +195,49 @@ public class GrowthProfileService {
         vo.setProfileId(profile.getProfileId());
         vo.setStudentId(profile.getStudentId());
         vo.setProfileMonth(profile.getProfileMonth());
+
+        // 情绪维度
         vo.setEmotionScore(profile.getEmotionScore());
+        vo.setEmotionLevel(getLevelText(profile.getEmotionScore()));
+        vo.setEmotionTrend("UP");
+        vo.setEmotionDetail(profile.getEmotionDetail());
+
+        // 社交维度
         vo.setSocialScore(profile.getSocialScore());
+        vo.setSocialLevel(getLevelText(profile.getSocialScore()));
+        vo.setSocialTrend("FLAT");
+        vo.setSocialDetail(profile.getSocialDetail());
+
+        // 学习维度
         vo.setLearningScore(profile.getLearningScore());
+        vo.setLearningLevel(getLevelText(profile.getLearningScore()));
+        vo.setLearningTrend("UP");
+        vo.setLearningDetail(profile.getLearningDetail());
+
+        // 运动维度
         vo.setSportScore(profile.getSportScore());
+        vo.setSportLevel(getLevelText(profile.getSportScore()));
+        vo.setSportTrend("FLAT");
+        vo.setSportDetail(profile.getSportDetail());
+
+        // 饮食维度
         vo.setDietScore(profile.getDietScore());
+        vo.setDietLevel(getLevelText(profile.getDietScore()));
+        vo.setDietTrend("UP");
+        vo.setDietDetail(profile.getDietDetail());
+
         vo.setOverallScore(profile.getOverallScore());
         vo.setAiAnalysis(profile.getAiAnalysis());
+
+        // 解析建议和预警
+        try {
+            vo.setSuggestions(parseJsonToList(profile.getSuggestions()));
+            vo.setWarnings(parseJsonToWarnings(profile.getWarnings()));
+        } catch (Exception e) {
+            log.error("Error parsing profile data", e);
+        }
+
+        vo.setGeneratedAt(profile.getCreateTime() != null ? profile.getCreateTime().toString() : null);
         return vo;
     }
 
@@ -210,10 +246,117 @@ public class GrowthProfileService {
         vo.setReportId(report.getReportId());
         vo.setStudentId(report.getStudentId());
         vo.setReportMonth(report.getReportMonth());
+
+        // 出勤统计
         vo.setAttendanceDays(report.getAttendanceDays());
         vo.setTotalDays(report.getTotalDays());
+        if (report.getTotalDays() != null && report.getAttendanceDays() != null && report.getTotalDays() > 0) {
+            vo.setAttendanceRate(Math.round((double) report.getAttendanceDays() / report.getTotalDays() * 100 * 100.0) / 100.0);
+        }
+        vo.setAttendanceTrend("持平");
+
+        // 解析成长亮点
+        try {
+            vo.setHighlights(parseJsonToList(report.getHighlights()));
+            vo.setDimensionData(parseJsonToMap(report.getDimensionData()));
+            vo.setFeaturedPhotos(parseJsonToList(report.getFeaturedPhotos()));
+        } catch (Exception e) {
+            log.error("Error parsing report data", e);
+        }
+
         vo.setAiSummary(report.getAiSummary());
         vo.setTeacherSummary(report.getTeacherSummary());
+        vo.setStatus(report.getStatus());
+
+        // 状态文本
+        if (report.getStatus() != null) {
+            switch (report.getStatus()) {
+                case 0: vo.setStatusText("生成中"); break;
+                case 1: vo.setStatusText("待审核"); break;
+                case 2: vo.setStatusText("已发布"); break;
+                case 3: vo.setStatusText("已拒绝"); break;
+                default: vo.setStatusText("未知");
+            }
+        }
+
+        vo.setPublishTime(report.getPublishTime() != null ? report.getPublishTime().toString() : null);
+        vo.setCreateTime(report.getCreateTime() != null ? report.getCreateTime().toString() : null);
+
+        // 生成H5和PDF链接
+        vo.setH5Url("/api/growth/report/h5/" + report.getReportId());
+        vo.setPdfUrl("/api/growth/report/export?reportId=" + report.getReportId());
+
         return vo;
+    }
+
+    /**
+     * 获取历史月份画像对比
+     */
+    public List<ProfileVO> getProfileHistory(String studentId, int months) {
+        List<GrowthProfile> profiles = profileMapper.selectList(
+                new LambdaQueryWrapper<GrowthProfile>()
+                        .eq(GrowthProfile::getStudentId, studentId)
+                        .orderByDesc(GrowthProfile::getProfileMonth)
+                        .last("LIMIT " + months)
+        );
+
+        return profiles.stream()
+                .map(this::convertProfileToVO)
+                .collect(java.util.stream.Collectors.toList());
+    }
+
+    /**
+     * 获取班级学生画像汇总
+     */
+    public Map<String, Object> getClassProfileSummary(String classId) {
+        Map<String, Object> summary = new java.util.HashMap<>();
+
+        // TODO: 从数据库查询班级学生画像统计数据
+        summary.put("avgEmotionScore", 85.0);
+        summary.put("avgSocialScore", 82.0);
+        summary.put("avgLearningScore", 88.0);
+        summary.put("avgSportScore", 80.0);
+        summary.put("avgDietScore", 86.0);
+        summary.put("totalStudents", 25);
+
+        return summary;
+    }
+
+    private String getLevelText(Integer score) {
+        if (score == null) return "未知";
+        if (score >= 90) return "优秀";
+        if (score >= 80) return "良好";
+        if (score >= 70) return "中等";
+        if (score >= 60) return "及格";
+        return "需关注";
+    }
+
+    private List<String> parseJsonToList(String json) {
+        if (json == null || json.isEmpty()) return java.util.Collections.emptyList();
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper().readValue(json,
+                    new com.fasterxml.jackson.core.type.TypeReference<List<String>>() {});
+        } catch (Exception e) {
+            return java.util.Collections.singletonList(json);
+        }
+    }
+
+    private List<Map<String, Object>> parseJsonToWarnings(String json) {
+        if (json == null || json.isEmpty()) return java.util.Collections.emptyList();
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper().readValue(json,
+                    new com.fasterxml.jackson.core.type.TypeReference<List<Map<String, Object>>>() {});
+        } catch (Exception e) {
+            return java.util.Collections.emptyList();
+        }
+    }
+
+    private Map<String, Object> parseJsonToMap(String json) {
+        if (json == null || json.isEmpty()) return java.util.Collections.emptyMap();
+        try {
+            return new com.fasterxml.jackson.databind.ObjectMapper().readValue(json, Map.class);
+        } catch (Exception e) {
+            return java.util.Collections.emptyMap();
+        }
     }
 }
