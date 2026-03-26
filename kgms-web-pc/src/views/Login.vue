@@ -56,7 +56,7 @@ const handleLogin = async () => {
   try {
     const data = await userApi.login(loginForm)
     localStorage.setItem('token', data.token)
-    localStorage.setItem('userInfo', JSON.stringify(data))
+    localStorage.setItem('userInfo', JSON.stringify(data);
     ElMessage.success('登录成功')
     router.push('/')
   } catch (e) {

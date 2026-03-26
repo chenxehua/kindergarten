@@ -184,13 +184,13 @@ const rules = {
 const loadData = async () => {
   loading.value = true
   try {
-    const res = await studentApi.getList({
+    const res = await studentApi.list({
       ...searchForm,
       page: pagination.page,
       pageSize: pagination.pageSize
     })
-    tableData.value = res.data.records || []
-    pagination.total = res.data.total || 0
+    tableData.value = res.records || []
+    pagination.total = res.total || 0
   } catch (e) {
     console.error(e)
   } finally {
@@ -200,8 +200,8 @@ const loadData = async () => {
 
 const loadClassList = async () => {
   try {
-    const res = await classApi.getList()
-    classList.value = res.data.records || []
+    const res = await classApi.list()
+    classList.value = res.records || []
   } catch (e) {
     console.error(e)
   }
