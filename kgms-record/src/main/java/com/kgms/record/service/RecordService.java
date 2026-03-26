@@ -245,7 +245,7 @@ public class RecordService {
         for (String studentId : dto.getStudentIds()) {
             RecordDTO recordDTO = new RecordDTO();
             recordDTO.setStudentId(studentId);
-            recordDTO.setRecordDate(dto.getRecordDate());
+            recordDTO.setRecordDate(LocalDate.parse(dto.getRecordDate()));
             recordDTO.setOverallNote(dto.getContent());
             // TODO: 设置其他字段
             saveRecord(recordDTO, dto.getClassId(), dto.getClassId(), true);

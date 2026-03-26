@@ -75,7 +75,7 @@ public class ClassController {
      * 获取班级学生列表 - TC-CLASS-002
      */
     @GetMapping("/students")
-    public Result<List<com.kgms.student.dto.StudentVO>> getClassStudents(@RequestParam String classId) {
+    public Result<Object> getClassStudents(@RequestParam String classId) {
         // TODO: 调用学生服务获取班级学生列表
         return Result.success(null);
     }
@@ -84,7 +84,7 @@ public class ClassController {
      * 获取班级老师列表 - TC-CLASS-003
      */
     @GetMapping("/teachers")
-    public Result<List<com.kgms.user.dto.UserInfoVO>> getClassTeachers(@RequestParam String classId) {
+    public Result<Object> getClassTeachers(@RequestParam String classId) {
         // TODO: 调用用户服务获取班级老师列表
         return Result.success(null);
     }

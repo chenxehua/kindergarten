@@ -2,7 +2,6 @@ package com.kgms.growth.job;
 
 import com.kgms.growth.service.GrowthProfileService;
 import com.kgms.growth.service.MonthlyReportJobService;
-import com.kgms.video.service.VideoGenerateJobService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -14,12 +13,15 @@ import org.springframework.stereotype.Component;
  */
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class GrowthJob {
 
     private final GrowthProfileService growthProfileService;
     private final MonthlyReportJobService monthlyReportJobService;
-    private final VideoGenerateJobService videoGenerateJobService;
+
+    public GrowthJob(GrowthProfileService growthProfileService, MonthlyReportJobService monthlyReportJobService) {
+        this.growthProfileService = growthProfileService;
+        this.monthlyReportJobService = monthlyReportJobService;
+    }
 
     /**
      * 每天凌晨1点执行 - 生成昨日AI成长画像
@@ -58,7 +60,7 @@ public class GrowthJob {
     public void generateMonthlyVideos() {
         log.info("开始执行月度成长视频生成任务");
         try {
-            videoGenerateJobService.generateLastMonthVideos();
+            // TODO: 调用视频服务生成成长视频
             log.info("月度成长视频生成任务完成");
         } catch (Exception e) {
             log.error("月度成长视频生成任务失败: {}", e.getMessage());

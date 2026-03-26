@@ -24,7 +24,9 @@ spring:
         - id: kgms-user
           uri: lb://kgms-user
           predicates:
-            - Path=/api/user/**
+            - Path=/api/user/**,/api/roles/**,/api/permissions/**,/api/logs/**
+          filters:
+            - StripPrefix=1
 
         # 学生服务
         - id: kgms-student
