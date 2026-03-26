@@ -473,17 +473,6 @@ INSERT INTO t_food_recipe (recipe_id, kg_id, week_start, monday, tuesday, nutrit
 INSERT INTO t_notice (notice_id, kg_id, title, content, notice_type, target_type, publish_by, publish_time, status) VALUES
 ('notice_001', 'kg_001', '清明节放假通知', '清明节放假3天，请家长做好安排。', '系统公告', '全体', 'user_principal_001', NOW(), 1);
 
--- 插入示例活动
-INSERT INTO t_activity (activity_id, kg_id, activity_name, activity_type, activity_time, end_time, location, description, target_type, max_participants, require_signup, status, principal_id, create_by) VALUES
-('activity_001', 'kg_001', '春季亲子运动会', 'PARENT', '2026-04-15 09:00:00', '2026-04-15 12:00:00', '幼儿园操场', '邀请家长参与孩子户外运动活动', 'ALL', 100, 1, 'PUBLISHED', 'teacher_001', 'user_principal_001'),
-('activity_002', 'kg_001', '清明节主题活动', 'FESTIVAL', '2026-04-04 10:00:00', '2026-04-04 11:30:00', '多功能教室', '了解清明节习俗', 'ALL', 50, 0, 'PUBLISHED', 'teacher_001', 'user_principal_001'),
-('activity_003', 'kg_001', '科学探索课', 'TEACHING', '2026-04-10 14:00:00', '2026-04-10 15:00:00', '科学实验室', '探索科学奥秘', 'CLASS', 30, 0, 'PUBLISHED', 'teacher_002', 'user_teacher_001');
-
--- 插入示例活动报名
-INSERT INTO t_activity_signup (signup_id, activity_id, student_id, parent_id, status) VALUES
-('signup_001', 'activity_001', 'stu_001', 'parent_001', 'APPROVED'),
-('signup_002', 'activity_001', 'stu_002', 'parent_002', 'PENDING');
-
 -- 插入示例成长记录
 INSERT INTO t_growth_record (record_id, student_id, record_date, teacher_id, class_id, emotion_type, breakfast, lunch, overall_note, publish_status, publish_time) VALUES
 ('record_001', 'stu_001', '2026-03-25', 'user_teacher_001', 'class_001', '开心', '食欲良好', '食欲良好', '今天表现很好，积极参与活动。', 1, NOW());
@@ -706,6 +695,12 @@ CREATE TABLE IF NOT EXISTS t_activity (
     INDEX idx_activity_time (activity_time)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动表';
 
+-- 插入示例活动
+INSERT INTO t_activity (activity_id, kg_id, activity_name, activity_type, activity_time, end_time, location, description, target_type, max_participants, require_signup, status, principal_id, create_by) VALUES
+('activity_001', 'kg_001', '春季亲子运动会', 'PARENT', '2026-04-15 09:00:00', '2026-04-15 12:00:00', '幼儿园操场', '邀请家长参与孩子户外运动活动', 'ALL', 100, 1, 'PUBLISHED', 'teacher_001', 'user_principal_001'),
+('activity_002', 'kg_001', '清明节主题活动', 'FESTIVAL', '2026-04-04 10:00:00', '2026-04-04 11:30:00', '多功能教室', '了解清明节习俗', 'ALL', 50, 0, 'PUBLISHED', 'teacher_001', 'user_principal_001'),
+('activity_003', 'kg_001', '科学探索课', 'TEACHING', '2026-04-10 14:00:00', '2026-04-10 15:00:00', '科学实验室', '探索科学奥秘', 'CLASS', 30, 0, 'PUBLISHED', 'teacher_002', 'user_teacher_001');
+
 -- 活动报名表
 CREATE TABLE IF NOT EXISTS t_activity_signup (
     id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
@@ -729,6 +724,11 @@ CREATE TABLE IF NOT EXISTS t_activity_signup (
     INDEX idx_activity (activity_id),
     INDEX idx_student (student_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动报名表';
+
+-- 插入示例活动报名
+INSERT INTO t_activity_signup (signup_id, activity_id, student_id, parent_id, status) VALUES
+('signup_001', 'activity_001', 'stu_001', 'parent_001', 'APPROVED'),
+('signup_002', 'activity_001', 'stu_002', 'parent_002', 'PENDING');
 
 -- 活动记录表
 CREATE TABLE IF NOT EXISTS t_activity_record (
@@ -1000,10 +1000,10 @@ CREATE TABLE IF NOT EXISTS t_video_task (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='视频生成任务表';
 
 -- 插入默认视频模板
-INSERT INTO t_video_template (template_id, template_name, template_type, preview_url, default_music, is_default, status) VALUES
-('tpl_001', '卡通风格', 'CARTOON', '/templates/cartoon.jpg', 'bgm_001.mp3', 1, 1),
-('tpl_002', '温馨风格', 'WARM', '/templates/warm.jpg', 'bgm_002.mp3', 0, 1),
-('tpl_003', '活泼风格', 'ACTIVE', '/templates/active.jpg', 'bgm_003.mp3', 0, 1);
+INSERT INTO t_video_template (template_id, template_name, template_type, template_url, preview_url, default_music, is_default, status) VALUES
+('tpl_001', '卡通风格', 'CARTOON', '/templates/cartoon.mp4', '/templates/cartoon.jpg', 'bgm_001.mp3', 1, 1),
+('tpl_002', '温馨风格', 'WARM', '/templates/warm.mp4', '/templates/warm.jpg', 'bgm_002.mp3', 0, 1),
+('tpl_003', '活泼风格', 'ACTIVE', '/templates/active.mp4', '/templates/active.jpg', 'bgm_003.mp3', 0, 1);
 
 -- 插入默认素材
 INSERT INTO t_video_material (material_id, material_type, material_name, material_url, duration, status) VALUES
