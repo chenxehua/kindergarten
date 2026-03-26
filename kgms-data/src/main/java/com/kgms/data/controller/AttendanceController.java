@@ -13,7 +13,7 @@ import java.util.Date;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/attendance")
+@RequestMapping("/api/attendance")
 @Slf4j
 public class AttendanceController {
 

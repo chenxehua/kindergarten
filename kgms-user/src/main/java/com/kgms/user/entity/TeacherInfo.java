@@ -12,10 +12,18 @@ import java.time.LocalDate;
 @EqualsAndHashCode(callSuper = true)
 @TableName("t_teacher_info")
 public class TeacherInfo extends BaseEntity {
+    /** 教师ID */
+    private String teacherId;
     /** 用户ID */
     private String userId;
+    /** 班级ID */
+    private String classId;
     /** 教师编号 */
     private String teacherNo;
+    /** 教师姓名 */
+    private String teacherName;
+    /** 手机号 */
+    private String phone;
     /** 职位 */
     private String position;
     /** 部门 */

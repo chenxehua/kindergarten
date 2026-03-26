@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/dashboard")
+@RequestMapping("/api/dashboard")
 @Slf4j
 public class DashboardController {
 

@@ -47,6 +47,30 @@ export default defineConfig({
       '/api/notice': {
         target: 'http://localhost:8089',
         changeOrigin: true
+      },
+      '/api/activity': {
+        target: 'http://localhost:8090',
+        changeOrigin: true
+      },
+      '/api/attendance': {
+        target: 'http://localhost:8090',
+        changeOrigin: true
+      },
+      '/api/settings': {
+        target: 'http://localhost:8090',
+        changeOrigin: true
+      },
+      '/api/dashboard': {
+        target: 'http://localhost:8090',
+        changeOrigin: true
+      },
+      '/api/teacher': {
+        target: 'http://localhost:8081',
+        changeOrigin: true
+      },
+      '/api/parent': {
+        target: 'http://localhost:8081',
+        changeOrigin: true
       }
     }
   }
