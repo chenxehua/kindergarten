@@ -18,7 +18,11 @@ import org.springframework.util.DigestUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 用户服务
@@ -31,6 +35,9 @@ public class UserService {
     private final SysUserMapper sysUserMapper;
     private final TeacherInfoMapper teacherInfoMapper;
     private final ParentInfoMapper parentInfoMapper;
+    private final UserRoleService userRoleService;
+    private final RoleService roleService;
+    private final com.kgms.user.mapper.PermissionMapper permissionMapper;
 
     /**
      * 账号密码登录
@@ -211,5 +218,27 @@ public class UserService {
      */
     private String encryptPassword(String password) {
         return DigestUtils.md5DigestAsHex(("kgms_" + password).getBytes(StandardCharsets.UTF_8));
+    }
+
+    /**
+     * 为用户分配角色
+     */
+    public void assignRoles(String userId, List<String> roleIds) {
+        userRoleService.assignRolesToUser(userId, roleIds);
+        log.info("Assigned roles to user: {}", userId);
+    }
+
+    /**
+     * 获取用户角色列表
+     */
+    public List<com.kgms.user.entity.Role> getUserRoles(String userId) {
+        return roleService.getRolesByUserId(userId);
+    }
+
+    /**
+     * 获取用户权限列表
+     */
+    public List<com.kgms.user.entity.Permission> getUserPermissions(String userId) {
+        return permissionMapper.selectPermissionsByUserId(userId);
     }
 }
