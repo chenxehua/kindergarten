@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kgms.course.mapper.ScheduleAdjustMapper">
+
+    <resultMap id="BaseResultMap" type="com.kgms.course.entity.ScheduleAdjust">
+        <id column="id" property="id"/>
+        <result column="adjust_id" property="adjustId"/>
+        <result column="schedule_id" property="scheduleId"/>
+        <result column="class_id" property="classId"/>
+        <result column="adjust_type" property="adjustType"/>
+        <result column="original_date" property="originalDate"/>
+        <result column="original_time" property="originalTime"/>
+        <result column="adjusted_date" property="adjustedDate"/>
+        <result column="adjusted_time" property="adjustedTime"/>
+        <result column="original_teacher_id" property="originalTeacherId"/>
+        <result column="substitute_teacher_id" property="substituteTeacherId"/>
+        <result column="substitute_reason" property="substituteReason"/>
+        <result column="course_id" property="courseId"/>
+        <result column="status" property="status"/>
+        <result column="apply_by" property="applyBy"/>
+        <result column="approve_by" property="approveBy"/>
+        <result column="approve_time" property="approveTime"/>
+        <result column="approve_remark" property="approveRemark"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_schedule_adjust WHERE id = #{id}
+    </select>
+
+    <select id="selectByAdjustId" resultMap="BaseResultMap">
+        SELECT * FROM t_schedule_adjust WHERE adjust_id = #{adjustId}
+    </select>
+
+    <select id="selectByClassId" resultMap="BaseResultMap">
+        SELECT * FROM t_schedule_adjust WHERE class_id = #{classId} ORDER BY original_date DESC
+    </select>
+
+    <select id="selectByDateRange" resultMap="BaseResultMap">
+        SELECT * FROM t_schedule_adjust
+        WHERE class_id = #{classId}
+        AND original_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY original_date
+    </select>
+
+    <select id="selectPendingByClassId" resultMap="BaseResultMap">
+        SELECT * FROM t_schedule_adjust
+        WHERE class_id = #{classId} AND status = 'PENDING'
+        ORDER BY original_date
+    </select>
+
+    <insert id="insert" parameterType="com.kgms.course.entity.ScheduleAdjust" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_schedule_adjust (
+            adjust_id, schedule_id, class_id, adjust_type,
+            original_date, original_time, adjusted_date, adjusted_time,
+            original_teacher_id, substitute_teacher_id, substitute_reason,
+            course_id, status, apply_by, approve_by, approve_time, approve_remark
+        ) VALUES (
+            #{adjustId}, #{scheduleId}, #{classId}, #{adjustType},
+            #{originalDate}, #{originalTime}, #{adjustedDate}, #{adjustedTime},
+            #{originalTeacherId}, #{substituteTeacherId}, #{substituteReason},
+            #{courseId}, #{status}, #{applyBy}, #{approveBy}, #{approveTime}, #{approveRemark}
+        )
+    </insert>
+
+    <update id="updateByAdjustId" parameterType="com.kgms.course.entity.ScheduleAdjust">
+        UPDATE t_schedule_adjust SET
+            adjusted_date = #{adjustedDate},
+            adjusted_time = #{adjustedTime},
+            substitute_teacher_id = #{substituteTeacherId},
+            substitute_reason = #{substituteReason},
+            status = #{status},
+            approve_by = #{approveBy},
+            approve_time = #{approveTime},
+            approve_remark = #{approveRemark}
+        WHERE adjust_id = #{adjustId}
+    </update>
+
+    <delete id="deleteByAdjustId">
+        DELETE FROM t_schedule_adjust WHERE adjust_id = #{adjustId}
+    </delete>
+</mapper>

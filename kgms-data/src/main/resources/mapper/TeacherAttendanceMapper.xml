@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kgms.data.mapper.TeacherAttendanceMapper">
+
+    <resultMap id="BaseResultMap" type="com.kgms.data.entity.TeacherAttendance">
+        <id column="id" property="id"/>
+        <result column="record_id" property="recordId"/>
+        <result column="teacher_id" property="teacherId"/>
+        <result column="attendance_date" property="attendanceDate"/>
+        <result column="check_in_time" property="checkInTime"/>
+        <result column="check_in_location" property="checkInLocation"/>
+        <result column="check_out_time" property="checkOutTime"/>
+        <result column="check_out_location" property="checkOutLocation"/>
+        <result column="status" property="status"/>
+        <result column="leave_type" property="leaveType"/>
+        <result column="leave_reason" property="leaveReason"/>
+        <result column="leave_proof" property="leaveProof"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_teacher_attendance WHERE id = #{id}
+    </select>
+
+    <select id="selectByRecordId" resultMap="BaseResultMap">
+        SELECT * FROM t_teacher_attendance WHERE record_id = #{recordId}
+    </select>
+
+    <select id="selectByTeacherAndDate" resultMap="BaseResultMap">
+        SELECT * FROM t_teacher_attendance
+        WHERE teacher_id = #{teacherId} AND attendance_date = #{attendanceDate}
+    </select>
+
+    <select id="selectByTeacherAndDateRange" resultMap="BaseResultMap">
+        SELECT * FROM t_teacher_attendance
+        WHERE teacher_id = #{teacherId}
+        AND attendance_date BETWEEN #{startDate} AND #{endDate}
+        ORDER BY attendance_date DESC
+    </select>
+
+    <insert id="insert" parameterType="com.kgms.data.entity.TeacherAttendance" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_teacher_attendance (
+            record_id, teacher_id, attendance_date,
+            check_in_time, check_in_location, check_out_time, check_out_location,
+            status, leave_type, leave_reason, leave_proof
+        ) VALUES (
+            #{recordId}, #{teacherId}, #{attendanceDate},
+            #{checkInTime}, #{checkInLocation}, #{checkOutTime}, #{checkOutLocation},
+            #{status}, #{leaveType}, #{leaveReason}, #{leaveProof}
+        )
+    </insert>
+
+    <update id="updateByRecordId" parameterType="com.kgms.data.entity.TeacherAttendance">
+        UPDATE t_teacher_attendance SET
+            check_in_time = #{checkInTime},
+            check_in_location = #{checkInLocation},
+            check_out_time = #{checkOutTime},
+            check_out_location = #{checkOutLocation},
+            status = #{status},
+            leave_type = #{leaveType},
+            leave_reason = #{leaveReason}
+        WHERE record_id = #{recordId}
+    </update>
+
+    <delete id="deleteByRecordId">
+        DELETE FROM t_teacher_attendance WHERE record_id = #{recordId}
+    </delete>
+</mapper>

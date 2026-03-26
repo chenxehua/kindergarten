@@ -750,3 +750,232 @@ INSERT INTO t_system_config (config_id, config_key, config_value, config_type, d
 ('config_push_time', 'push.daily.time', '16:00', 'STRING', '每日推送时间', 1),
 ('config_video_max_size', 'video.max.size', '500', 'NUMBER', '视频最大MB', 1);
 
+-- =============================================
+-- 课程调课模块
+-- =============================================
+
+-- 调课记录表
+CREATE TABLE IF NOT EXISTS t_schedule_adjust (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    adjust_id           VARCHAR(32) NOT NULL UNIQUE COMMENT '调课ID',
+    schedule_id         VARCHAR(32) NOT NULL COMMENT '原课表ID',
+    class_id            VARCHAR(32) NOT NULL COMMENT '班级ID',
+
+    -- 调课信息
+    adjust_type         VARCHAR(20) NOT NULL COMMENT '调整类型: SWAP-换课 SUBSTITUTE-代课 MOVE-调时段',
+    original_date       DATE NOT NULL COMMENT '原上课日期',
+    original_time       VARCHAR(20) COMMENT '原上课时间',
+    adjusted_date       DATE NOT NULL COMMENT '调整后日期',
+    adjusted_time       VARCHAR(20) COMMENT '调整后时间',
+
+    -- 代课信息
+    original_teacher_id VARCHAR(32) COMMENT '原授课老师ID',
+    substitute_teacher_id VARCHAR(32) COMMENT '代课老师ID',
+    substitute_reason   VARCHAR(500) COMMENT '代课原因',
+
+    -- 课程信息
+    course_id           VARCHAR(32) NOT NULL COMMENT '课程ID',
+
+    -- 状态
+    status              VARCHAR(20) DEFAULT 'PENDING' COMMENT '状态: PENDING-待审批 APPROVED-已批准 REJECTED-已拒绝 CANCELLED-已取消',
+    apply_by            VARCHAR(32) COMMENT '申请人',
+    approve_by          VARCHAR(32) COMMENT '审批人',
+    approve_time        DATETIME COMMENT '审批时间',
+    approve_remark      VARCHAR(500) COMMENT '审批备注',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_class_date (class_id, original_date),
+    INDEX idx_schedule (schedule_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='调课记录表';
+
+-- 老师课表安排表（个人）
+CREATE TABLE IF NOT EXISTS t_teacher_schedule (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    record_id           VARCHAR(32) NOT NULL UNIQUE COMMENT '安排ID',
+    teacher_id          VARCHAR(32) NOT NULL COMMENT '老师ID',
+    schedule_id         VARCHAR(32) COMMENT '关联课表ID',
+    class_id            VARCHAR(32) NOT NULL COMMENT '班级ID',
+    course_id           VARCHAR(32) NOT NULL COMMENT '课程ID',
+
+    -- 时间信息
+    schedule_date       DATE NOT NULL COMMENT '上课日期',
+    week_day            TINYINT NOT NULL COMMENT '星期(1-7)',
+    start_time          TIME NOT NULL COMMENT '开始时间',
+    end_time            TIME NOT NULL COMMENT '结束时间',
+
+    -- 状态
+    status              VARCHAR(20) DEFAULT 'SCHEDULED' COMMENT '状态: SCHEDULED-已安排 SUBSTITUTED-已代课 CANCELLED-已取消',
+    remark              VARCHAR(500) COMMENT '备注',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_teacher_date (teacher_id, schedule_date),
+    INDEX idx_class_date (class_id, schedule_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='老师课表安排表';
+
+-- =============================================
+-- 食谱营养分析模块
+-- =============================================
+
+-- 营养成分标准表
+CREATE TABLE IF NOT EXISTS t_nutrition_standard (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    standard_id         VARCHAR(32) NOT NULL UNIQUE COMMENT '标准ID',
+    age_group           VARCHAR(20) NOT NULL COMMENT '年龄段: 3-4岁/4-5岁/5-6岁',
+    nutrient_name       VARCHAR(50) NOT NULL COMMENT '营养素名称',
+    daily_amount        DECIMAL(10,2) NOT NULL COMMENT '每日推荐量',
+    unit                VARCHAR(20) NOT NULL COMMENT '单位',
+    description         VARCHAR(200) COMMENT '说明',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_age_nutrient (age_group, nutrient_name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='营养成分标准表';
+
+-- 食材营养表
+CREATE TABLE IF NOT EXISTS t_food_nutrition (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    food_id             VARCHAR(32) NOT NULL UNIQUE COMMENT '食材ID',
+    food_name           VARCHAR(100) NOT NULL COMMENT '食材名称',
+    category            VARCHAR(50) COMMENT '分类: 主食/蔬菜/水果/肉蛋/奶制品/豆制品',
+
+    -- 每100g营养成分
+    calories            DECIMAL(10,2) COMMENT '热量(kcal)',
+    protein             DECIMAL(10,2) COMMENT '蛋白质(g)',
+    fat                 DECIMAL(10,2) COMMENT '脂肪(g)',
+    carbohydrates       DECIMAL(10,2) COMMENT '碳水化合物(g)',
+    vitamin_a           DECIMAL(10,2) COMMENT '维生素A(μg)',
+    vitamin_c           DECIMAL(10,2) COMMENT '维生素C(mg)',
+    calcium             DECIMAL(10,2) COMMENT '钙(mg)',
+    iron                DECIMAL(10,2) COMMENT '铁(mg)',
+    zinc                DECIMAL(10,2) COMMENT '锌(mg)',
+    fiber               DECIMAL(10,2) COMMENT '膳食纤维(g)',
+
+    -- 过敏原
+    allergens           VARCHAR(200) COMMENT '过敏原',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_category (category)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='食材营养表';
+
+-- 插入营养标准数据
+INSERT INTO t_nutrition_standard (standard_id, age_group, nutrient_name, daily_amount, unit, description) VALUES
+('ns_001', '3-4岁', '热量', 1200, 'kcal', '每日推荐摄入量'),
+('ns_002', '3-4岁', '蛋白质', 45, 'g', '每日推荐摄入量'),
+('ns_003', '3-4岁', '钙', 600, 'mg', '每日推荐摄入量'),
+('ns_004', '3-4岁', '铁', 10, 'mg', '每日推荐摄入量'),
+('ns_005', '3-4岁', '锌', 5, 'mg', '每日推荐摄入量'),
+('ns_006', '4-5岁', '热量', 1300, 'kcal', '每日推荐摄入量'),
+('ns_007', '4-5岁', '蛋白质', 50, 'g', '每日推荐摄入量'),
+('ns_008', '4-5岁', '钙', 650, 'mg', '每日推荐摄入量'),
+('ns_009', '5-6岁', '热量', 1400, 'kcal', '每日推荐摄入量'),
+('ns_010', '5-6岁', '蛋白质', 55, 'g', '每日推荐摄入量');
+
+-- 插入常见食材营养数据
+INSERT INTO t_food_nutrition (food_id, food_name, category, calories, protein, fat, carbohydrates, calcium, iron, allergens) VALUES
+('food_001', '米饭', '主食', 116, 2.6, 0.3, 25.9, 7, 0.3, NULL),
+('food_002', '面条', '主食', 109, 2.7, 0.2, 24.7, 8, 0.4, '小麦'),
+('food_003', '鸡胸肉', '肉蛋', 165, 31, 3.6, 0, 15, 0.4, NULL),
+('food_004', '鸡蛋', '肉蛋', 143, 12.6, 9.5, 0.8, 44, 1.2, '鸡蛋'),
+('food_005', '牛奶', '奶制品', 61, 3.2, 3.3, 4.5, 113, 0.1, '牛奶'),
+('food_006', '胡萝卜', '蔬菜', 32, 0.7, 0.2, 7.6, 32, 0.3, NULL),
+('food_007', '西红柿', '蔬菜', 18, 0.9, 0.2, 3.9, 10, 0.4, NULL),
+('food_008', '苹果', '水果', 52, 0.3, 0.2, 13.8, 6, 0.1, NULL),
+('food_009', '香蕉', '水果', 89, 1.1, 0.3, 22.8, 7, 0.3, NULL);
+
+-- =============================================
+-- 视频模板模块
+-- =============================================
+
+-- 视频模板表
+CREATE TABLE IF NOT EXISTS t_video_template (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    template_id         VARCHAR(32) NOT NULL UNIQUE COMMENT '模板ID',
+    template_name       VARCHAR(100) NOT NULL COMMENT '模板名称',
+    template_type       VARCHAR(20) NOT NULL COMMENT '模板类型: CARTOON-卡通 WARM-温馨 ACTIVE-活泼 SIMPLE-简约',
+
+    -- 模板信息
+    preview_url         VARCHAR(500) COMMENT '预览图URL',
+    template_url        VARCHAR(500) NOT NULL COMMENT '模板文件URL',
+    duration            INT COMMENT '视频时长(秒)',
+    default_music       VARCHAR(500) COMMENT '默认背景音乐',
+
+    -- 样式配置
+    style_config        JSON COMMENT '样式配置JSON',
+    text_style          JSON COMMENT '文字样式配置',
+    transition_effect   VARCHAR(50) COMMENT '转场效果',
+
+    -- 状态
+    is_default          TINYINT DEFAULT 0 COMMENT '是否默认模板',
+    status              TINYINT DEFAULT 1 COMMENT '状态: 0-停用 1-启用',
+    create_by           VARCHAR(32) COMMENT '创建人',
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_template_type (template_type),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='视频模板表';
+
+-- 视频素材表
+CREATE TABLE IF NOT EXISTS t_video_material (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    material_id        VARCHAR(32) NOT NULL UNIQUE COMMENT '素材ID',
+    material_type       VARCHAR(20) NOT NULL COMMENT '素材类型: MUSIC-音乐 EFFECT-特效 FONT-字体',
+
+    -- 素材信息
+    material_name      VARCHAR(100) NOT NULL COMMENT '素材名称',
+    material_url       VARCHAR(500) NOT NULL COMMENT '素材URL',
+    duration            INT COMMENT '时长(秒)',
+    size                INT COMMENT '文件大小(KB)',
+
+    -- 状态
+    status              TINYINT DEFAULT 1 COMMENT '状态: 0-停用 1-启用',
+    use_count           INT DEFAULT 0 COMMENT '使用次数',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='视频素材表';
+
+-- 视频生成任务表（增强版）
+CREATE TABLE IF NOT EXISTS t_video_task (
+    id                  BIGINT PRIMARY KEY AUTO_INCREMENT,
+    task_id             VARCHAR(32) NOT NULL UNIQUE COMMENT '任务ID',
+    video_id            VARCHAR(32) COMMENT '关联视频ID',
+    student_id          VARCHAR(32) NOT NULL COMMENT '学生ID',
+
+    -- 生成参数
+    video_type          VARCHAR(20) NOT NULL COMMENT '视频类型: MONTHLY/REVIEW/HIGHLIGHT',
+    start_date          DATE COMMENT '开始日期',
+    end_date            DATE COMMENT '结束日期',
+    template_id         VARCHAR(32) COMMENT '使用模板ID',
+    music_id            VARCHAR(32) COMMENT '背景音乐ID',
+    custom_text         VARCHAR(500) COMMENT '自定义文字',
+
+    -- 生成状态
+    status              VARCHAR(20) DEFAULT 'PENDING' COMMENT '状态: PENDING-排队中 PROCESSING-处理中 COMPLETED-已完成 FAILED-失败',
+    progress            INT DEFAULT 0 COMMENT '进度(0-100)',
+    error_msg           TEXT COMMENT '失败原因',
+
+    -- 智能选片
+    selected_photos    JSON COMMENT '选中的照片(JSON数组)',
+    photo_count         INT DEFAULT 0 COMMENT '照片数量',
+
+    create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
+    update_time         DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_student_id (student_id),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='视频生成任务表';
+
+-- 插入默认视频模板
+INSERT INTO t_video_template (template_id, template_name, template_type, preview_url, default_music, is_default, status) VALUES
+('tpl_001', '卡通风格', 'CARTOON', '/templates/cartoon.jpg', 'bgm_001.mp3', 1, 1),
+('tpl_002', '温馨风格', 'WARM', '/templates/warm.jpg', 'bgm_002.mp3', 0, 1),
+('tpl_003', '活泼风格', 'ACTIVE', '/templates/active.jpg', 'bgm_003.mp3', 0, 1);
+
+-- 插入默认素材
+INSERT INTO t_video_material (material_id, material_type, material_name, material_url, duration, status) VALUES
+('music_001', 'MUSIC', '儿童轻音乐', '/music/light.mp3', 180, 1),
+('music_002', 'MUSIC', '温馨背景乐', '/music/warm.mp3', 180, 1),
+('music_003', 'MUSIC', '欢快儿歌', '/music/happy.mp3', 120, 1);
+
+

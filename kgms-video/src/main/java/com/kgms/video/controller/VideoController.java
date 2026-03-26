@@ -1,7 +1,10 @@
 package com.kgms.video.controller;
 
+import com.kgms.video.dto.VideoTaskRequest;
 import com.kgms.video.dto.VideoVO;
+import com.kgms.video.entity.VideoTemplate;
 import com.kgms.video.service.VideoService;
+import com.kgms.video.service.VideoTemplateService;
 import com.kgms.common.result.Result;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -18,6 +21,7 @@ import java.util.List;
 public class VideoController {
 
     private final VideoService videoService;
+    private final VideoTemplateService templateService;
 
     /**
      * 获取视频列表 - TC-VIDEO-002
@@ -103,5 +107,86 @@ public class VideoController {
         // TODO: 权限检查 - 园长才能审核
         videoService.auditVideo(videoId, approved);
         return Result.success();
+    }
+
+    // ==================== 视频模板管理 ====================
+
+    /**
+     * 获取所有视频模板
+     */
+    @GetMapping("/templates")
+    public Result<List<VideoTemplate>> getAllTemplates() {
+        return Result.success(templateService.getAllTemplates());
+    }
+
+    /**
+     * 根据类型获取模板
+     */
+    @GetMapping("/templates/type")
+    public Result<List<VideoTemplate>> getTemplatesByType(@RequestParam String templateType) {
+        return Result.success(templateService.getTemplatesByType(templateType));
+    }
+
+    /**
+     * 获取默认模板
+     */
+    @GetMapping("/templates/default")
+    public Result<VideoTemplate> getDefaultTemplate() {
+        return Result.success(templateService.getDefaultTemplate());
+    }
+
+    /**
+     * 获取模板详情
+     */
+    @GetMapping("/templates/detail")
+    public Result<VideoTemplate> getTemplateDetail(@RequestParam String templateId) {
+        return Result.success(templateService.getTemplateDetail(templateId));
+    }
+
+    /**
+     * 创建模板
+     */
+    @PostMapping("/templates")
+    public Result<String> createTemplate(@RequestBody VideoTemplate template) {
+        return Result.success(templateService.createTemplate(template));
+    }
+
+    /**
+     * 更新模板
+     */
+    @PutMapping("/templates")
+    public Result<Void> updateTemplate(@RequestBody VideoTemplate template) {
+        templateService.updateTemplate(template);
+        return Result.success();
+    }
+
+    /**
+     * 删除模板
+     */
+    @DeleteMapping("/templates")
+    public Result<Void> deleteTemplate(@RequestParam String templateId) {
+        templateService.deleteTemplate(templateId);
+        return Result.success();
+    }
+
+    /**
+     * 设置默认模板
+     */
+    @PostMapping("/templates/set-default")
+    public Result<Void> setDefaultTemplate(@RequestParam String templateId) {
+        templateService.setDefaultTemplate(templateId);
+        return Result.success();
+    }
+
+    /**
+     * 智能选片
+     */
+    @GetMapping("/smart-select")
+    public Result<List<String>> smartSelectPhotos(
+            @RequestParam String studentId,
+            @RequestParam String startDate,
+            @RequestParam String endDate,
+            @RequestParam(defaultValue = "30") int maxCount) {
+        return Result.success(templateService.smartSelectPhotos(studentId, startDate, endDate, maxCount));
     }
 }

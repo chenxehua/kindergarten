@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kgms.video.mapper.VideoTemplateMapper">
+
+    <resultMap id="BaseResultMap" type="com.kgms.video.entity.VideoTemplate">
+        <id column="id" property="id"/>
+        <result column="template_id" property="templateId"/>
+        <result column="template_name" property="templateName"/>
+        <result column="template_type" property="templateType"/>
+        <result column="preview_url" property="previewUrl"/>
+        <result column="template_url" property="templateUrl"/>
+        <result column="duration" property="duration"/>
+        <result column="default_music" property="defaultMusic"/>
+        <result column="style_config" property="styleConfig"/>
+        <result column="text_style" property="textStyle"/>
+        <result column="transition_effect" property="transitionEffect"/>
+        <result column="is_default" property="isDefault"/>
+        <result column="status" property="status"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_time" property="updateTime"/>
+    </resultMap>
+
+    <select id="selectById" resultMap="BaseResultMap">
+        SELECT * FROM t_video_template WHERE id = #{id}
+    </select>
+
+    <select id="selectByTemplateId" resultMap="BaseResultMap">
+        SELECT * FROM t_video_template WHERE template_id = #{templateId}
+    </select>
+
+    <select id="selectByType" resultMap="BaseResultMap">
+        SELECT * FROM t_video_template WHERE template_type = #{templateType} AND status = 1
+    </select>
+
+    <select id="selectAll" resultMap="BaseResultMap">
+        SELECT * FROM t_video_template WHERE status = 1 ORDER BY is_default DESC
+    </select>
+
+    <select id="selectDefault" resultMap="BaseResultMap">
+        SELECT * FROM t_video_template WHERE is_default = 1 AND status = 1
+    </select>
+
+    <insert id="insert" parameterType="com.kgms.video.entity.VideoTemplate" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_video_template (
+            template_id, template_name, template_type, preview_url, template_url,
+            duration, default_music, style_config, text_style, transition_effect,
+            is_default, status, create_by
+        ) VALUES (
+            #{templateId}, #{templateName}, #{templateType}, #{previewUrl}, #{templateUrl},
+            #{duration}, #{defaultMusic}, #{styleConfig}, #{textStyle}, #{transitionEffect},
+            #{isDefault}, #{status}, #{createBy}
+        )
+    </insert>
+
+    <update id="updateByTemplateId" parameterType="com.kgms.video.entity.VideoTemplate">
+        UPDATE t_video_template SET
+            template_name = #{templateName},
+            template_type = #{templateType},
+            preview_url = #{previewUrl},
+            template_url = #{templateUrl},
+            duration = #{duration},
+            default_music = #{defaultMusic},
+            style_config = #{styleConfig},
+            text_style = #{textStyle},
+            transition_effect = #{transitionEffect},
+            is_default = #{isDefault},
+            status = #{status}
+        WHERE template_id = #{templateId}
+    </update>
+
+    <delete id="deleteByTemplateId">
+        DELETE FROM t_video_template WHERE template_id = #{templateId}
+    </delete>
+</mapper>
