@@ -5,7 +5,7 @@ spring:
     name: kgms-food
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://host.docker.internal:3307/kgms?useUnicode=true&characterEncoding=utf-8
+    url: jdbc:mysql://localhost:3307/kgms?useUnicode=true&characterEncoding=utf-8
     username: root
     password: tldevops2026
 mybatis-plus:
