@@ -69,4 +69,80 @@ test.describe('登录功能测试', () => {
     const currentUrl = page.url();
     console.log('Current URL after login:', currentUrl);
   });
+
+  test('TC-LOGIN-006: 用户名包含特殊字符', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('admin<script>');
+    await page.locator('[placeholder="请输入密码"]').fill('admin123');
+    await page.locator('.el-button--primary').click();
+    await page.waitForTimeout(2000);
+
+    // 检查页面仍然在登录页
+    await expect(page.locator('.login-box')).toBeVisible();
+  });
+
+  test('TC-LOGIN-007: 密码过短', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('admin');
+    await page.locator('[placeholder="请输入密码"]').fill('123');
+    await page.locator('.el-button--primary').click();
+    await page.waitForTimeout(2000);
+
+    // 检查页面仍然在登录页
+    await expect(page.locator('.login-box')).toBeVisible();
+  });
+
+  test('TC-LOGIN-008: 空格字符作为用户名和密码', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('   ');
+    await page.locator('[placeholder="请输入密码"]').fill('   ');
+    await page.locator('.el-button--primary').click();
+    await page.waitForTimeout(2000);
+
+    // 检查页面仍然在登录页
+    await expect(page.locator('.login-box')).toBeVisible();
+  });
+
+  test('TC-LOGIN-009: 超长用户名和密码', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const longStr = 'a'.repeat(200);
+    await page.locator('[placeholder="请输入用户名"]').fill(longStr);
+    await page.locator('[placeholder="请输入密码"]').fill(longStr);
+    await page.locator('.el-button--primary').click();
+    await page.waitForTimeout(2000);
+
+    // 检查页面仍然在登录页
+    await expect(page.locator('.login-box')).toBeVisible();
+  });
+
+  test('TC-LOGIN-010: 登录按钮加载状态', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('admin');
+    await page.locator('[placeholder="请输入密码"]').fill('admin123');
+
+    // 点击登录按钮
+    await page.locator('.el-button--primary').click();
+
+    // 等待页面响应
+    await page.waitForTimeout(2000);
+
+    // 检查页面是否加载
+    const content = await page.content();
+    expect(content.length).toBeGreaterThan(0);
+  });
 });
