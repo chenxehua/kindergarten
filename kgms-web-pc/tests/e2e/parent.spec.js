@@ -61,4 +61,50 @@ test.describe('家长管理功能测试', () => {
     const content = await page.content();
     expect(content.length).toBeGreaterThan(0);
   });
+
+  test('TC-PARENT-007: 家长列表刷新', async ({ page }) => {
+    await page.goto('http://localhost:3001/parent');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const content = await page.content();
+    expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-PARENT-008: 家长班级关联筛选', async ({ page }) => {
+    await page.goto('http://localhost:3001/parent');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const classSelect = page.locator('.el-select');
+    if (await classSelect.count() > 0) {
+      await expect(classSelect.first()).toBeVisible();
+    }
+  });
+
+  test('TC-PARENT-009: 家长导入按钮', async ({ page }) => {
+    await page.goto('http://localhost:3001/parent');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const importButton = page.locator('button:has-text("导入")');
+    if (await importButton.count() > 0) {
+      await expect(importButton).toBeVisible();
+    }
+  });
+
+  test('TC-PARENT-010: 家长导出按钮', async ({ page }) => {
+    await page.goto('http://localhost:3001/parent');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const exportButton = page.locator('button:has-text("导出")');
+    if (await exportButton.count() > 0) {
+      await expect(exportButton).toBeVisible();
+    }
+  });
 });

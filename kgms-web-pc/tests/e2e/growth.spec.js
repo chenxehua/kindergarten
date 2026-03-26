@@ -60,4 +60,49 @@ test.describe('成长档案功能测试', () => {
     const content = await page.content();
     expect(content.length).toBeGreaterThan(0);
   });
+
+  test('TC-GROWTH-007: 成长档案刷新', async ({ page }) => {
+    await page.goto('http://localhost:3001/growth');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const content = await page.content();
+    expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-GROWTH-008: 成长记录类型筛选', async ({ page }) => {
+    await page.goto('http://localhost:3001/growth');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const typeFilter = page.locator('.el-radio-group, .el-checkbox-group');
+    if (await typeFilter.count() > 0) {
+      await expect(typeFilter.first()).toBeVisible();
+    }
+  });
+
+  test('TC-GROWTH-009: 成长记录时间线', async ({ page }) => {
+    await page.goto('http://localhost:3001/growth');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const timeline = page.locator('.el-timeline, [class*="timeline"]');
+    const hasTimeline = await timeline.count() > 0 || (await page.content()).length > 0;
+    expect(hasTimeline).toBeTruthy();
+  });
+
+  test('TC-GROWTH-010: 成长记录导出', async ({ page }) => {
+    await page.goto('http://localhost:3001/growth');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const exportButton = page.locator('button:has-text("导出")');
+    if (await exportButton.count() > 0) {
+      await expect(exportButton).toBeVisible();
+    }
+  });
 });

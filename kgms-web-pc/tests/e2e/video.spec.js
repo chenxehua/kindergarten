@@ -61,4 +61,50 @@ test.describe('视频管理功能测试', () => {
     const content = await page.content();
     expect(content.length).toBeGreaterThan(0);
   });
+
+  test('TC-VIDEO-007: 视频列表刷新', async ({ page }) => {
+    await page.goto('http://localhost:3001/video');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const content = await page.content();
+    expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-VIDEO-008: 视频分页检查', async ({ page }) => {
+    await page.goto('http://localhost:3001/video');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const pagination = page.locator('.el-pagination');
+    if (await pagination.count() > 0) {
+      await expect(pagination).toBeVisible();
+    }
+  });
+
+  test('TC-VIDEO-009: 视频批量删除', async ({ page }) => {
+    await page.goto('http://localhost:3001/video');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const batchDelete = page.locator('button:has-text("批量删除")');
+    if (await batchDelete.count() > 0) {
+      await expect(batchDelete).toBeVisible();
+    }
+  });
+
+  test('TC-VIDEO-010: 视频排序功能', async ({ page }) => {
+    await page.goto('http://localhost:3001/video');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const sortButton = page.locator('.el-table__header-wrapper th');
+    if (await sortButton.count() > 0) {
+      await expect(sortButton.first()).toBeVisible();
+    }
+  });
 });

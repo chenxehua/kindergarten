@@ -61,4 +61,50 @@ test.describe('教师管理功能测试', () => {
     const content = await page.content();
     expect(content.length).toBeGreaterThan(0);
   });
+
+  test('TC-TEACHER-007: 教师列表刷新', async ({ page }) => {
+    await page.goto('http://localhost:3001/teacher');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const content = await page.content();
+    expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-TEACHER-008: 教师导入按钮', async ({ page }) => {
+    await page.goto('http://localhost:3001/teacher');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const importButton = page.locator('button:has-text("导入")');
+    if (await importButton.count() > 0) {
+      await expect(importButton).toBeVisible();
+    }
+  });
+
+  test('TC-TEACHER-009: 教师导出按钮', async ({ page }) => {
+    await page.goto('http://localhost:3001/teacher');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const exportButton = page.locator('button:has-text("导出")');
+    if (await exportButton.count() > 0) {
+      await expect(exportButton).toBeVisible();
+    }
+  });
+
+  test('TC-TEACHER-010: 教师分页检查', async ({ page }) => {
+    await page.goto('http://localhost:3001/teacher');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const pagination = page.locator('.el-pagination');
+    if (await pagination.count() > 0) {
+      await expect(pagination).toBeVisible();
+    }
+  });
 });
