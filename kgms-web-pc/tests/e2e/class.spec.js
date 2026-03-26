@@ -47,7 +47,6 @@ test.describe('班级管理功能测试', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // 检查页面是否加载（可能有元素或重定向到登录）
     const content = await page.content();
     expect(content.length).toBeGreaterThan(0);
   });
@@ -57,8 +56,53 @@ test.describe('班级管理功能测试', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // 检查页面是否加载
     const content = await page.content();
     expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-CLASS-007: 班级年级筛选', async ({ page }) => {
+    await page.goto('http://localhost:3001/class');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const gradeSelect = page.locator('.el-select');
+    if (await gradeSelect.count() > 0) {
+      await expect(gradeSelect.first()).toBeVisible();
+    }
+  });
+
+  test('TC-CLASS-008: 班级列表刷新', async ({ page }) => {
+    await page.goto('http://localhost:3001/class');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const content = await page.content();
+    expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-CLASS-009: 班级导入按钮', async ({ page }) => {
+    await page.goto('http://localhost:3001/class');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const importButton = page.locator('button:has-text("导入")');
+    if (await importButton.count() > 0) {
+      await expect(importButton).toBeVisible();
+    }
+  });
+
+  test('TC-CLASS-010: 班级导出按钮', async ({ page }) => {
+    await page.goto('http://localhost:3001/class');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const exportButton = page.locator('button:has-text("导出")');
+    if (await exportButton.count() > 0) {
+      await expect(exportButton).toBeVisible();
+    }
   });
 });

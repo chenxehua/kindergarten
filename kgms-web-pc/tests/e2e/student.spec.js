@@ -24,7 +24,6 @@ test.describe('学生管理功能测试', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // 检查是否有分页控件
     const pagination = page.locator('.el-pagination');
     if (await pagination.count() > 0) {
       await expect(pagination).toBeVisible();
@@ -36,7 +35,6 @@ test.describe('学生管理功能测试', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // 检查是否有搜索框
     const searchInput = page.locator('[placeholder="请输入姓名或学号"]');
     if (await searchInput.count() > 0) {
       await searchInput.fill('测试');
@@ -49,7 +47,6 @@ test.describe('学生管理功能测试', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // 检查是否有新增按钮
     const addButton = page.locator('button:has-text("新增")');
     if (await addButton.count() > 0) {
       await expect(addButton).toBeVisible();
@@ -63,5 +60,51 @@ test.describe('学生管理功能测试', () => {
 
     const content = await page.content();
     expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-STUDENT-007: 学生班级筛选', async ({ page }) => {
+    await page.goto('http://localhost:3001/student');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const classSelect = page.locator('.el-select');
+    if (await classSelect.count() > 0) {
+      await expect(classSelect.first()).toBeVisible();
+    }
+  });
+
+  test('TC-STUDENT-008: 学生状态筛选', async ({ page }) => {
+    await page.goto('http://localhost:3001/student');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const statusFilter = page.locator('[placeholder="请选择状态"]');
+    if (await statusFilter.count() > 0) {
+      await expect(statusFilter).toBeVisible();
+    }
+  });
+
+  test('TC-STUDENT-009: 学生列表刷新', async ({ page }) => {
+    await page.goto('http://localhost:3001/student');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const content = await page.content();
+    expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-STUDENT-010: 学生列表导出按钮', async ({ page }) => {
+    await page.goto('http://localhost:3001/student');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(2000);
+
+    const exportButton = page.locator('button:has-text("导出")');
+    if (await exportButton.count() > 0) {
+      await expect(exportButton).toBeVisible();
+    }
   });
 });

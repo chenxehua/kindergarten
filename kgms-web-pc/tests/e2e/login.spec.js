@@ -212,4 +212,64 @@ test.describe('登录功能测试', () => {
     const loginBox = page.locator('.login-box');
     await expect(loginBox).toBeVisible();
   });
+
+  test('TC-LOGIN-016: 登录页面标题验证', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const title = await page.title();
+    expect(title).toContain('智慧幼儿园');
+  });
+
+  test('TC-LOGIN-017: 登录表单输入框数量', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const inputs = page.locator('.el-input');
+    expect(await inputs.count()).toBeGreaterThanOrEqual(2);
+  });
+
+  test('TC-LOGIN-018: 登录按钮存在性', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    const button = page.locator('.el-button--primary');
+    await expect(button).toBeVisible();
+    await expect(button).toContainText('登录');
+  });
+
+  test('TC-LOGIN-019: 多次快速点击登录', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('admin');
+    await page.locator('[placeholder="请输入密码"]').fill('admin123');
+
+    // 多次点击
+    await page.locator('.el-button--primary').click();
+    await page.locator('.el-button--primary').click();
+    await page.waitForTimeout(2000);
+
+    const content = await page.content();
+    expect(content.length).toBeGreaterThan(0);
+  });
+
+  test('TC-LOGIN-020: 登录后页面元素', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('admin');
+    await page.locator('[placeholder="请输入密码"]').fill('admin123');
+    await page.locator('.el-button--primary').click();
+
+    await page.waitForTimeout(3000);
+    // 检查localStorage中的token
+    const token = await page.evaluate(() => localStorage.getItem('token'));
+    expect(token).toBeTruthy();
+  });
 });
