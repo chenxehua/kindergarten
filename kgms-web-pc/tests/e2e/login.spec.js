@@ -3,13 +3,10 @@ import { test, expect } from '@playwright/test';
 test.describe('登录功能测试', () => {
   test('TC-LOGIN-001: 登录页面应该正常显示', async ({ page }) => {
     await page.goto('http://localhost:3001/login');
-    // 等待页面完全加载
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(2000);
 
-    // 检查页面容器是否存在
     await expect(page.locator('.login-container')).toBeVisible({ timeout: 10000 });
-    // 检查标题
     await expect(page.locator('.title')).toContainText('智慧幼儿园');
   });
 
@@ -18,12 +15,10 @@ test.describe('登录功能测试', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
-    // 不输入用户名，只输入密码
     await page.locator('[placeholder="请输入密码"]').fill('123456');
     await page.locator('.el-button--primary').click();
     await page.waitForTimeout(1000);
 
-    // 检查页面仍然在登录页
     await expect(page.locator('.login-box')).toBeVisible();
   });
 
@@ -36,7 +31,6 @@ test.describe('登录功能测试', () => {
     await page.locator('.el-button--primary').click();
     await page.waitForTimeout(1000);
 
-    // 检查页面仍然在登录页
     await expect(page.locator('.login-box')).toBeVisible();
   });
 
@@ -50,7 +44,6 @@ test.describe('登录功能测试', () => {
     await page.locator('.el-button--primary').click();
     await page.waitForTimeout(2000);
 
-    // 检查页面仍然在登录页
     await expect(page.locator('.login-box')).toBeVisible();
   });
 
@@ -63,11 +56,13 @@ test.describe('登录功能测试', () => {
     await page.locator('[placeholder="请输入密码"]').fill('admin123');
     await page.locator('.el-button--primary').click();
 
-    // 等待页面跳转
     await page.waitForTimeout(3000);
-    // 检查是否跳转到首页（路由跳转会改变URL）
     const currentUrl = page.url();
-    console.log('Current URL after login:', currentUrl);
+    expect(currentUrl).toContain('/dashboard');
+
+    const token = await page.evaluate(() => localStorage.getItem('token'));
+    expect(token).toBeTruthy();
+    console.log('Login successful, token stored:', token ? 'yes' : 'no');
   });
 
   test('TC-LOGIN-006: 用户名包含特殊字符', async ({ page }) => {
@@ -80,7 +75,6 @@ test.describe('登录功能测试', () => {
     await page.locator('.el-button--primary').click();
     await page.waitForTimeout(2000);
 
-    // 检查页面仍然在登录页
     await expect(page.locator('.login-box')).toBeVisible();
   });
 
@@ -94,7 +88,6 @@ test.describe('登录功能测试', () => {
     await page.locator('.el-button--primary').click();
     await page.waitForTimeout(2000);
 
-    // 检查页面仍然在登录页
     await expect(page.locator('.login-box')).toBeVisible();
   });
 
@@ -108,7 +101,6 @@ test.describe('登录功能测试', () => {
     await page.locator('.el-button--primary').click();
     await page.waitForTimeout(2000);
 
-    // 检查页面仍然在登录页
     await expect(page.locator('.login-box')).toBeVisible();
   });
 
@@ -123,7 +115,6 @@ test.describe('登录功能测试', () => {
     await page.locator('.el-button--primary').click();
     await page.waitForTimeout(2000);
 
-    // 检查页面仍然在登录页
     await expect(page.locator('.login-box')).toBeVisible();
   });
 
@@ -134,14 +125,9 @@ test.describe('登录功能测试', () => {
 
     await page.locator('[placeholder="请输入用户名"]').fill('admin');
     await page.locator('[placeholder="请输入密码"]').fill('admin123');
-
-    // 点击登录按钮
     await page.locator('.el-button--primary').click();
 
-    // 等待页面响应
     await page.waitForTimeout(2000);
-
-    // 检查页面是否加载
     const content = await page.content();
     expect(content.length).toBeGreaterThan(0);
   });
@@ -168,7 +154,6 @@ test.describe('登录功能测试', () => {
     await page.locator('[placeholder="请输入用户名"]').fill('admin');
     await page.locator('[placeholder="请输入密码"]').fill('password');
 
-    // 检查输入框有值
     await expect(page.locator('[placeholder="请输入用户名"]')).toHaveValue('admin');
     await expect(page.locator('[placeholder="请输入密码"]')).toHaveValue('password');
   });
@@ -178,11 +163,9 @@ test.describe('登录功能测试', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
-    // 点击登录按钮不输入内容
     await page.locator('.el-button--primary').click();
     await page.waitForTimeout(1000);
 
-    // 检查是否有错误提示
     const errorMsg = page.locator('.el-form-item__error');
     if (await errorMsg.count() > 0) {
       await expect(errorMsg.first()).toBeVisible();
@@ -205,7 +188,6 @@ test.describe('登录功能测试', () => {
     await page.waitForLoadState('networkidle');
     await page.waitForTimeout(1000);
 
-    // 移动端视图
     await page.setViewportSize({ width: 375, height: 667 });
     await page.waitForTimeout(1000);
 
@@ -249,7 +231,6 @@ test.describe('登录功能测试', () => {
     await page.locator('[placeholder="请输入用户名"]').fill('admin');
     await page.locator('[placeholder="请输入密码"]').fill('admin123');
 
-    // 多次点击
     await page.locator('.el-button--primary').click();
     await page.locator('.el-button--primary').click();
     await page.waitForTimeout(2000);
@@ -268,8 +249,50 @@ test.describe('登录功能测试', () => {
     await page.locator('.el-button--primary').click();
 
     await page.waitForTimeout(3000);
-    // 检查localStorage中的token
     const token = await page.evaluate(() => localStorage.getItem('token'));
     expect(token).toBeTruthy();
+  });
+
+  test('TC-LOGIN-021: 登录后获取用户信息', async ({ page }) => {
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('admin');
+    await page.locator('[placeholder="请输入密码"]').fill('admin123');
+    await page.locator('.el-button--primary').click();
+
+    await page.waitForTimeout(3000);
+
+    const userInfo = await page.evaluate(() => localStorage.getItem('userInfo'));
+    expect(userInfo).toBeTruthy();
+    console.log('User info stored:', userInfo ? 'yes' : 'no');
+  });
+
+  test('TC-LOGIN-022: 登录后API请求验证', async ({ page }) => {
+    const apiRequests = [];
+    page.on('response', response => {
+      if (response.url().includes('/api/') && response.request().method() === 'GET') {
+        apiRequests.push({
+          url: response.url(),
+          status: response.status()
+        });
+      }
+    });
+
+    await page.goto('http://localhost:3001/login');
+    await page.waitForLoadState('networkidle');
+    await page.waitForTimeout(1000);
+
+    await page.locator('[placeholder="请输入用户名"]').fill('admin');
+    await page.locator('[placeholder="请输入密码"]').fill('admin123');
+    await page.locator('.el-button--primary').click();
+
+    await page.waitForTimeout(4000);
+
+    console.log('API GET requests after login:', apiRequests.length);
+    apiRequests.forEach(req => {
+      console.log('  -', req.url, 'status:', req.status);
+    });
   });
 });
