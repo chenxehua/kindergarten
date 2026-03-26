@@ -48,7 +48,7 @@ public class AttendanceService {
 
         // 创建新签到记录
         Attendance attendance = new Attendance();
-        attendance.setAttendanceId(IdGenerator.generateId("ATT"));
+        attendance.setAttendanceId(IdGenerator.generateIdWithPrefix("ATT"));
         attendance.setStudentId(studentId);
         attendance.setClassId(classId);
         attendance.setKgId(kgId);
@@ -109,7 +109,7 @@ public class AttendanceService {
         String attendanceDate = LocalDate.now().format(dateFormatter);
 
         Attendance attendance = new Attendance();
-        attendance.setAttendanceId(IdGenerator.generateId("ATT"));
+        attendance.setAttendanceId(IdGenerator.generateIdWithPrefix("ATT"));
         attendance.setStudentId(studentId);
         attendance.setClassId(classId);
         attendance.setKgId(kgId);

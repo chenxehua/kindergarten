@@ -23,6 +23,7 @@
         <module>kgms-video</module>
         <module>kgms-growth</module>
         <module>kgms-notice</module>
+        <module>kgms-data</module>
         <module>kgms-gateway</module>
     </modules>
 

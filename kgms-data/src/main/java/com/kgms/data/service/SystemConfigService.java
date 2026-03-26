@@ -99,7 +99,7 @@ public class SystemConfigService {
         }
 
         SystemConfig config = new SystemConfig();
-        config.setConfigId(IdGenerator.generateId("CFG"));
+        config.setConfigId(IdGenerator.generateIdWithPrefix("CFG"));
         config.setConfigKey(configKey);
         config.setConfigValue(configValue);
         config.setConfigType(configType);

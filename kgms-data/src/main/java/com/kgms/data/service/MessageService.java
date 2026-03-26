@@ -30,7 +30,7 @@ public class MessageService {
         String conversationId = getOrCreateConversation(senderId, receiverId);
 
         Message message = new Message();
-        message.setMessageId(IdGenerator.generateId("MSG"));
+        message.setMessageId(IdGenerator.generateIdWithPrefix("MSG"));
         message.setConversationId(conversationId);
         message.setSenderId(senderId);
         message.setSenderType(senderType);
@@ -100,7 +100,7 @@ public class MessageService {
      */
     public Conversation createGroup(String name, String ownerId, List<String> memberIds) {
         Conversation conversation = new Conversation();
-        conversation.setConversationId(IdGenerator.generateId("GRP"));
+        conversation.setConversationId(IdGenerator.generateIdWithPrefix("GRP"));
         conversation.setConversationType("GROUP");
         conversation.setName(name);
         conversation.setOwnerId(ownerId);

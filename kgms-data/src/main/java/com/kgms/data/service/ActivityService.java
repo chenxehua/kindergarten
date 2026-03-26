@@ -5,11 +5,13 @@ import com.kgms.data.dto.ActivityDTO;
 import com.kgms.data.entity.Activity;
 import com.kgms.data.entity.ActivitySignup;
 import com.kgms.data.mapper.ActivityMapper;
+import com.kgms.data.mapper.ActivitySignupMapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 
 @Service
@@ -29,7 +31,7 @@ public class ActivityService {
      */
     public Activity createActivity(ActivityDTO dto) {
         Activity activity = new Activity();
-        activity.setActivityId(IdGenerator.generateId("ACT"));
+        activity.setActivityId(IdGenerator.generateIdWithPrefix("ACT"));
         activity.setKgId(dto.getKgId());
         activity.setActivityName(dto.getActivityName());
         activity.setActivityType(dto.getActivityType());
@@ -41,7 +43,7 @@ public class ActivityService {
         activity.setTargetType(dto.getTargetType());
         activity.setTargetIds(convertListToJson(dto.getTargetIds()));
         activity.setMaxParticipants(dto.getMaxParticipants());
-        activity.setFee(dto.getFee());
+        activity.setFee(dto.getFee() != null ? BigDecimal.valueOf(dto.getFee()) : null);
         activity.setFeeDescription(dto.getFeeDescription());
         activity.setRequireSignup(dto.getRequireSignup());
         activity.setSignupDeadline(dto.getSignupDeadline());
@@ -101,9 +103,10 @@ public class ActivityService {
      * 获取活动列表
      */
     public List<ActivityDTO> getActivityList(String kgId, String activityType, String status, String startDate, String endDate) {
-        List<Activity> activities = activityMapper.selectActivityList(kgId, activityType, status, startDate, endDate);
+        List<Map<String, Object>> maps = activityMapper.selectActivityList(kgId, activityType, status, startDate, endDate);
         List<ActivityDTO> result = new ArrayList<>();
-        for (Activity activity : activities) {
+        for (Map<String, Object> map : maps) {
+            Activity activity = objectMapper.convertValue(map, Activity.class);
             result.add(convertToDTO(activity));
         }
         return result;
@@ -131,7 +134,7 @@ public class ActivityService {
         }
 
         ActivitySignup signup = new ActivitySignup();
-        signup.setSignupId(IdGenerator.generateId("SIGN"));
+        signup.setSignupId(IdGenerator.generateIdWithPrefix("SIGN"));
         signup.setActivityId(activityId);
         signup.setStudentId(studentId);
         signup.setParentId(parentId);
