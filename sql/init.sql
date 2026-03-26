@@ -35,27 +35,38 @@ CREATE TABLE IF NOT EXISTS t_sys_user (
 -- 老师信息扩展表
 CREATE TABLE IF NOT EXISTS t_teacher_info (
     id              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    teacher_id      VARCHAR(32) NOT NULL COMMENT '老师ID',
     user_id         VARCHAR(32) NOT NULL COMMENT '关联用户ID',
+    class_id        VARCHAR(32) COMMENT '所属班级ID',
     teacher_no      VARCHAR(20) NOT NULL COMMENT '工号',
+    teacher_name    VARCHAR(50) COMMENT '老师姓名',
+    phone           VARCHAR(20) COMMENT '手机号',
     position        VARCHAR(50) COMMENT '职位: 主班/副班/保育员/保健医',
     department      VARCHAR(50) COMMENT '所属部门',
     hire_date       DATE COMMENT '入职日期',
     create_time     DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_time     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY uk_teacher_id (teacher_id),
     UNIQUE KEY uk_user_id (user_id),
-    INDEX idx_teacher_no (teacher_no)
+    INDEX idx_teacher_no (teacher_no),
+    INDEX idx_class_id (class_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='老师信息表';
 
 -- 家长信息扩展表
 CREATE TABLE IF NOT EXISTS t_parent_info (
     id              BIGINT PRIMARY KEY AUTO_INCREMENT,
+    parent_id       VARCHAR(32) NOT NULL COMMENT '家长ID',
     user_id         VARCHAR(32) NOT NULL COMMENT '关联用户ID',
     student_id      VARCHAR(32) NOT NULL COMMENT '关联学生ID',
+    parent_name     VARCHAR(50) COMMENT '家长姓名',
+    phone           VARCHAR(20) COMMENT '手机号',
     relation_type   VARCHAR(20) NOT NULL COMMENT '关系: 爸爸/妈妈/爷爷/奶奶/其他',
     is_emergency    TINYINT DEFAULT 0 COMMENT '是否紧急联系人: 0-否 1-是',
     create_time     DATETIME DEFAULT CURRENT_TIMESTAMP,
     update_time     DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    INDEX idx_student_id (student_id)
+    UNIQUE KEY uk_parent_id (parent_id),
+    INDEX idx_student_id (student_id),
+    INDEX idx_user_id (user_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='家长信息表';
 
 -- =============================================
@@ -436,14 +447,14 @@ INSERT INTO t_sys_user (user_id, user_type, username, password, nickname, phone,
 ('user_principal_001', 3, 'principal001', 'e10adc3949ba59abbe56e057f20f883e', '园长', '13700000001', 1);
 
 -- 插入老师信息
-INSERT INTO t_teacher_info (user_id, teacher_no, position, department) VALUES
-('user_teacher_001', 'T001', '主班', '教学部'),
-('user_teacher_002', 'T002', '副班', '教学部');
+INSERT INTO t_teacher_info (teacher_id, user_id, class_id, teacher_no, teacher_name, phone, position, department) VALUES
+('teacher_001', 'user_teacher_001', 'class_001', 'T001', '张老师', '13800000001', '主班', '教学部'),
+('teacher_002', 'user_teacher_002', 'class_002', 'T002', '李老师', '13800000002', '副班', '教学部');
 
 -- 插入家长信息
-INSERT INTO t_parent_info (user_id, student_id, relation_type, is_emergency) VALUES
-('user_parent_001', 'stu_001', '爸爸', 1),
-('user_parent_002', 'stu_002', '妈妈', 1);
+INSERT INTO t_parent_info (parent_id, user_id, student_id, parent_name, phone, relation_type, is_emergency) VALUES
+('parent_001', 'user_parent_001', 'stu_001', '张爸爸', '13900000001', '爸爸', 1),
+('parent_002', 'user_parent_002', 'stu_002', '李妈妈', '13900000002', '妈妈', 1);
 
 -- 插入测试课程
 INSERT INTO t_course (course_id, kg_id, course_name, course_type, age_group, duration, status) VALUES
@@ -461,6 +472,17 @@ INSERT INTO t_food_recipe (recipe_id, kg_id, week_start, monday, tuesday, nutrit
 -- 插入示例通知
 INSERT INTO t_notice (notice_id, kg_id, title, content, notice_type, target_type, publish_by, publish_time, status) VALUES
 ('notice_001', 'kg_001', '清明节放假通知', '清明节放假3天，请家长做好安排。', '系统公告', '全体', 'user_principal_001', NOW(), 1);
+
+-- 插入示例活动
+INSERT INTO t_activity (activity_id, kg_id, activity_name, activity_type, activity_time, end_time, location, description, target_type, max_participants, require_signup, status, principal_id, create_by) VALUES
+('activity_001', 'kg_001', '春季亲子运动会', 'PARENT', '2026-04-15 09:00:00', '2026-04-15 12:00:00', '幼儿园操场', '邀请家长参与孩子户外运动活动', 'ALL', 100, 1, 'PUBLISHED', 'teacher_001', 'user_principal_001'),
+('activity_002', 'kg_001', '清明节主题活动', 'FESTIVAL', '2026-04-04 10:00:00', '2026-04-04 11:30:00', '多功能教室', '了解清明节习俗', 'ALL', 50, 0, 'PUBLISHED', 'teacher_001', 'user_principal_001'),
+('activity_003', 'kg_001', '科学探索课', 'TEACHING', '2026-04-10 14:00:00', '2026-04-10 15:00:00', '科学实验室', '探索科学奥秘', 'CLASS', 30, 0, 'PUBLISHED', 'teacher_002', 'user_teacher_001');
+
+-- 插入示例活动报名
+INSERT INTO t_activity_signup (signup_id, activity_id, student_id, parent_id, status) VALUES
+('signup_001', 'activity_001', 'stu_001', 'parent_001', 'APPROVED'),
+('signup_002', 'activity_001', 'stu_002', 'parent_002', 'PENDING');
 
 -- 插入示例成长记录
 INSERT INTO t_growth_record (record_id, student_id, record_date, teacher_id, class_id, emotion_type, breakfast, lunch, overall_note, publish_status, publish_time) VALUES
@@ -508,6 +530,13 @@ CREATE TABLE IF NOT EXISTS t_attendance (
     INDEX idx_class_date (class_id, attendance_date),
     INDEX idx_status (status)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='考勤记录表';
+
+-- 插入示例考勤记录
+INSERT INTO t_attendance (attendance_id, student_id, class_id, kg_id, attendance_date, check_in_time, check_out_time, status) VALUES
+('att_001', 'stu_001', 'class_001', 'kg_001', '2026-03-26', '08:00:00', '16:30:00', 'NORMAL'),
+('att_002', 'stu_002', 'class_001', 'kg_001', '2026-03-26', '08:05:00', '16:30:00', 'NORMAL'),
+('att_003', 'stu_003', 'class_002', 'kg_001', '2026-03-26', '08:00:00', '16:30:00', 'NORMAL'),
+('att_004', 'stu_004', 'class_002', 'kg_001', '2026-03-26', NULL, NULL, 'LEAVE');
 
 -- 老师考勤表
 CREATE TABLE IF NOT EXISTS t_teacher_attendance (
@@ -572,6 +601,10 @@ CREATE TABLE IF NOT EXISTS t_dashboard_snapshot (
     create_time         DATETIME DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY uk_kg_date (kg_id, snapshot_date, snapshot_type)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='看板数据快照表';
+
+-- 插入示例看板快照
+INSERT INTO t_dashboard_snapshot (snapshot_id, kg_id, snapshot_date, snapshot_type, total_students, attendance_rate, total_records, published_records, total_photos, active_parents, message_count, total_courses) VALUES
+('snap_001', 'kg_001', '2026-03-26', 'DAILY', 50, 96.00, 25, 25, 50, 20, 30, 10);
 
 -- =============================================
 -- 家校沟通模块
